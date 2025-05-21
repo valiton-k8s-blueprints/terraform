@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+  namespace: argocd
+spec:
+  goTemplate: true
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: 'applications'
+    spec:
+      project: default
+      source:
+        repoURL: '{{.metadata.annotations.applications_repo_url}}'
+        path: 'applications'
+        targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
+        directory:
+          recurse: true
+          include: '{*.yaml,{{.metadata.labels.cloud_provider}}/*.yaml}'
+          exclude: '{{.metadata.annotations.excluded_applications}}'
+      destination:
+        namespace: argocd
+        name: '{{.name}}'
+      syncPolicy:
+        automated: {}

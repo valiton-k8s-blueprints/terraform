@@ -1,0 +1,5 @@
+machine:
+  certSANs: [${endpoint}]
+  install:
+    extraKernelArgs:
+      - 'talos.platform=openstack'

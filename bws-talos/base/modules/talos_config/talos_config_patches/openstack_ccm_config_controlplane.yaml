@@ -1,0 +1,25 @@
+cluster:
+  extraManifests:
+    - https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/refs/tags/${os_ccm_version}/manifests/controller-manager/cloud-controller-manager-roles.yaml
+    - https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/refs/tags/${os_ccm_version}/manifests/controller-manager/cloud-controller-manager-role-bindings.yaml
+    - https://raw.githubusercontent.com/kubernetes/cloud-provider-openstack/refs/tags/${os_ccm_version}/manifests/controller-manager/openstack-cloud-controller-manager-ds.yaml
+  inlineManifests:
+    - name: ccm-config
+      contents: |-
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: cloud-config
+          namespace: kube-system
+        type: Opaque
+        stringData: 
+          cloud.conf: |-
+            [Global]
+            auth-url=${os_auth_url}
+            application-credential-id=${os_application_credential_id}
+            application-credential-secret=${os_application_credential_secret}
+            [LoadBalancer]
+            subnet-id=${os_subnet_id}
+            floating-network-id=${os_floating_network_id}
+            manage-security-groups=true
+            cascade-delete=false
