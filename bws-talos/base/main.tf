@@ -133,3 +133,29 @@ data "talos_client_configuration" "talos" {
   client_configuration = local.client_configuration
   endpoints            = [var.kube_api_external_ip]
 }
+
+locals {
+  openstack_helm_chart_version = replace(var.openstack_ccm_version, "v1", "2")
+}
+
+resource "helm_release" "openstack_cloud_controller_manager" {
+  depends_on = [data.talos_cluster_health.talos]
+
+  name       = "openstack-cloud-controller-manager"
+  chart      = "openstack-cloud-controller-manager"
+  version    = local.openstack_helm_chart_version
+  repository = "https://kubernetes.github.io/cloud-provider-openstack"
+  namespace  = "kube-system"
+
+  values = [yamlencode({
+    secret = {
+      enabled = true
+      create  = false
+    }
+    cluster = {
+      name = var.base_name
+    }
+  })]
+
+  wait = true
+}

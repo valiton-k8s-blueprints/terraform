@@ -59,12 +59,15 @@ cluster:
                     - /etc/pki/tls.key
                     - --keystone-url
                     - ${os_auth_url}/v3
+                    - --listen
+                    - 127.0.0.1:8443
                   volumeMounts:
                     - mountPath: /etc/pki
                       name: tls-secret
                       readOnly: true
                   ports:
                     - containerPort: 8443
+                      hostPort: 8443
               hostNetwork: true
               volumes:
                 - name: tls-secret
@@ -79,20 +82,6 @@ cluster:
                   operator: Exists
                 - effect: NoExecute
                   operator: Exists
-    - name: k8s-keystone-service
-      contents: |-
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: k8s-keystone-service
-          namespace: kube-system
-        spec:
-          selector:
-            app: k8s-keystone
-          ports:
-            - protocol: TCP
-              port: 8443
-              targetPort: 8443
     - name: k8s-keystone-project-cluster-role-binding
       contents: |-
         apiVersion: rbac.authorization.k8s.io/v1

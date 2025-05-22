@@ -89,7 +89,6 @@ module "cluster_secrets" {
   os_application_credential_secret = var.os_application_credential_secret
 }
 
-
 ################################################################################
 # GitOps Bridge: Bootstrap
 ################################################################################
@@ -134,5 +133,5 @@ EOF
     ]
   }
 
-  destroy_timeout = 180
+  destroy_timeout = var.destroy_timeout
 }

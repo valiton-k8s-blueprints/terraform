@@ -59,6 +59,11 @@ variable "gitops_applications_repo_revision" {
   type        = string
 }
 
+variable "destroy_timeout" {
+  description = "Time to wait after uninstalling applications in seconds"
+  type        = number
+}
+
 # Applications
 variable "external_dns" {
   description = "External DNS add-on configuration values"

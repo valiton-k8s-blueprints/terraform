@@ -21,7 +21,7 @@ output "controlplane_machine_configuration" {
 
 output "os_public_network_id" {
   description = "ID of the public network"
-  value       =  module.network.public_network_id
+  value       = module.network.public_network_id
 }
 
 output "os_private_network_subnet_id" {
@@ -30,7 +30,7 @@ output "os_private_network_subnet_id" {
 }
 
 output "talos_cluster_health" {
-  value = data.talos_cluster_health.talos
+  value = helm_release.openstack_cloud_controller_manager.status
 }
 
 output "x_download_kubeconfig" {
