@@ -1,0 +1,8 @@
+cluster:
+  apiServer:
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          exemptions:
+            namespaces:
+              ${indent(14, pod_security_exemptions_namespaces)}

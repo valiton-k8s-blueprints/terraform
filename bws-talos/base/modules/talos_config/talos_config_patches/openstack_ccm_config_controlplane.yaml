@@ -1,0 +1,21 @@
+cluster:
+  inlineManifests:
+    - name: ccm-config
+      contents: |-
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: cloud-config
+          namespace: kube-system
+        type: Opaque
+        stringData: 
+          cloud.conf: |-
+            [Global]
+            auth-url=${os_auth_url}
+            application-credential-id=${os_application_credential_id}
+            application-credential-secret=${os_application_credential_secret}
+            [LoadBalancer]
+            subnet-id=${os_subnet_id}
+            floating-network-id=${os_floating_network_id}
+            manage-security-groups=true
+            cascade-delete=false
