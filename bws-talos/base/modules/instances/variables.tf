@@ -1,59 +1,68 @@
 variable "name_prefix" {
   description = "Prefix to add to names of created resources"
-  default     = "cluster"
+  type        = string
 }
 
 variable "worker_count" {
   description = "Number of worker nodes"
   type        = number
-  default     = 2
 }
 
 variable "controlplane_count" {
   description = "Number of controlplane nodes"
   type        = number
-  default     = 3
 }
 
 variable "image_name" {
   description = "Name of the image for the machines"
-  default     = "talos"
+  type        = string
 }
 
 variable "worker_instance_flavor" {
   description = "Instance flavor for workers"
-  default     = "BWS-T1-2-4"
+  type        = string
 }
 variable "worker_volume_type" {
   description = "Volume type for workers"
-  default     = "ssd-10000-250"
+  type        = string
 }
 
 variable "worker_volume_size" {
-  description = "Volume size for workers"
-  default     = "40"
+  description = "Volume size for workers in GB"
+  type        = number
 }
 
 variable "worker_port_id" {
-  default = ["1", "2"]
+  description = "Worker port ids list"
+  type        = list(string)
 }
 
 variable "worker_user_data" {
-  default = ""
+  description = "User data for worker"
+  type        = string
 }
 
 variable "controlplane_instance_flavor" {
-  default = "BWS-T1-2-4"
+  description = "Instance flavor for controlplane"
+  type        = string
 }
 
 variable "controlplane_volume_type" {
-  default = "ssd-10000-250"
+  description = "Volume type for controlplan"
+  type        = string
 }
 
 variable "controlplane_volume_size" {
-  default = "20"
+  description = "Volume size for controlplane in GB"
+  type        = number
 }
 
 variable "controlplane_port_id" {
-  default = ["3", "4", "5"]
+  description = "Controlplane port ids list"
+  type        = list(string)
+}
+
+variable "controlplane_user_data" {
+  description = "User data for controlpane"
+  type        = string
 }

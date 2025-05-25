@@ -41,6 +41,7 @@ resource "openstack_compute_instance_v2" "controlplane" {
 
   name      = "${var.name_prefix}-controlplane-${count.index}"
   flavor_id = data.openstack_compute_flavor_v2.controlplane_flavor.id
+  user_data = var.controlplane_user_data
 
   block_device {
     uuid                  = data.openstack_images_image_v2.talos.id
@@ -54,5 +55,9 @@ resource "openstack_compute_instance_v2" "controlplane" {
 
   network {
     port = var.controlplane_port_id[count.index]
+  }
+
+  lifecycle {
+    ignore_changes = [user_data]
   }
 }

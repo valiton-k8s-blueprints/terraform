@@ -10,11 +10,12 @@ variable "base_name" {
 
 variable "os_public_network_name" {
   description = "Name of the Openstack public network"
+  type        = string
 }
 
 variable "os_private_network_name" {
   description = "Name of the private network, will be prefixed with base_name"
-  default     = "private-network"
+  type        = string
 }
 
 variable "os_private_network_cidr" {
@@ -25,50 +26,62 @@ variable "os_private_network_cidr" {
 
 variable "os_auth_url" {
   description = "Openstack keystone url"
+  type        = string
 }
 
 variable "os_application_credential_id" {
   description = "Openstack application credentials ID"
+  type        = string
 }
 
 variable "os_application_credential_secret" {
   description = "Openstack application credentials secret"
+  type        = string
 }
 
 variable "os_user_name" {
   description = "Openstack user name"
+  type        = string
 }
 
 variable "talos_secrets" {
   description = "Object of secrets generated with talosctl gen secrets"
+  type        = any
 }
 
 variable "worker_instance_flavor" {
   description = "Instance flavor for worker nodes"
+  type        = string
 }
 
 variable "worker_volume_type" {
-  description = "BWS volume type for worker nodes"
+  description = "Volume type for worker nodes"
+  type        = string
 }
 
 variable "worker_volume_size" {
   description = "Size in GB of the disk of worker nodes"
+  type        = number
 }
 
 variable "controlplane_instance_flavor" {
   description = "Instance flavor for controlplane nodes"
+  type        = string
 }
 
 variable "controlplane_volume_type" {
-  description = "BWS volume type for controlplane nodes"
+  description = "Volume type for controlplane nodes"
+  type        = string
 }
 
 variable "controlplane_volume_size" {
   description = "Size in GB of the disk of controlplane nodes"
+  type        = number
 }
 
 variable "image_name" {
-  description = "Name of the Talos image in your BWS project"
+  description = "Name of the Talos image in your project"
+  type        = string
 }
 
 variable "kube_api_external_ip" {
@@ -103,4 +116,5 @@ variable "controlplane_count" {
 
 variable "pod_security_exemptions_namespaces" {
   description = "List of namespaces for pod security exemption"
+  type        = list(string)
 }

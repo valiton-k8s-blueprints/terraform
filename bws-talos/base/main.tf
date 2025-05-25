@@ -69,6 +69,7 @@ module "instances" {
   controlplane_volume_type     = var.controlplane_volume_type
   controlplane_volume_size     = var.controlplane_volume_size
   controlplane_port_id         = module.network.controlplane_port_id
+  controlplane_user_data       = module.talos-config.controlplane_machine_configuration
 }
 
 ############################

@@ -41,7 +41,7 @@ resource "kubernetes_service_account_v1" "access_secrets" {
 
   metadata {
     namespace = var.namespace
-    name      = "access-${var.secret_name}"
+    name      = var.service_account
   }
 }
 

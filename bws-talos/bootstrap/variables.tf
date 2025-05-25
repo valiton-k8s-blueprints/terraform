@@ -64,6 +64,12 @@ variable "destroy_timeout" {
   type        = number
 }
 
+variable "cluster_secrets" {
+  description = "Configure namespace, secret name and service accout name for Openstack secret"
+  type        = any
+  default     = {}
+}
+
 # Applications
 variable "external_dns" {
   description = "External DNS add-on configuration values"

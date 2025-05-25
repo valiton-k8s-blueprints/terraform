@@ -1,4 +1,10 @@
 locals {
+  cluster_secrets = {
+    namespace       = try(var.cluster_secrets.namespace, "cluster-secrets")
+    secret_name     = try(var.cluster_secrets.secret_name, "cluster-secrets")
+    service_account = try(var.cluster_secrets.service_account, "access-cluster-secrets")
+  }
+
   gitops_applications_repo_url      = var.gitops_applications_repo_url
   gitops_applications_repo_revision = var.gitops_applications_repo_revision
 
@@ -62,9 +68,9 @@ locals {
       enable_cert_manager_designate_webhook      = var.addons.enable_cert_manager_designate_webhook
     },
     {
-      cluster_secret_namespace       = module.cluster_secrets.namepace
-      cluster_secret_name            = module.cluster_secrets.secret_name
-      cluster_secret_service_account = module.cluster_secrets.service_account
+      cluster_secret_namespace       = local.cluster_secrets.namespace
+      cluster_secret_name            = local.cluster_secrets.secret_name
+      cluster_secret_service_account = local.cluster_secrets.service_account
       openstack_auth_url             = var.os_auth_url
       openstack_subnet_id            = var.os_private_network_subnet_id
       openstack_floating_network_id  = var.os_public_network_id
@@ -87,6 +93,10 @@ module "cluster_secrets" {
 
   os_application_credential_id     = var.os_application_credential_id
   os_application_credential_secret = var.os_application_credential_secret
+
+  namespace       = local.cluster_secrets.namespace
+  secret_name     = local.cluster_secrets.secret_name
+  service_account = local.cluster_secrets.service_account
 }
 
 ################################################################################
