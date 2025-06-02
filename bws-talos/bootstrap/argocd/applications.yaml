@@ -14,14 +14,19 @@ spec:
       name: 'applications'
     spec:
       project: default
-      source:
-        repoURL: '{{.metadata.annotations.applications_repo_url}}'
-        path: 'applications'
-        targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
-        directory:
-          recurse: true
-          include: '{*.yaml,{{.metadata.labels.cloud_provider}}/*.yaml}'
-          exclude: '{{.metadata.annotations.excluded_applications}}'
+      sources:
+        - repoURL: '{{.metadata.annotations.applications_repo_url}}'
+          path: 'applications'
+          targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
+          directory:
+            recurse: false
+            exclude: '{{.metadata.annotations.excluded_applications}}'
+        - repoURL: '{{.metadata.annotations.applications_repo_url}}'
+          path: 'applications/{{.metadata.labels.cloud_provider}}'
+          targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
+          directory:
+            recurse: false
+            exclude: '{{.metadata.annotations.excluded_applications}}'
       destination:
         namespace: argocd
         name: '{{.name}}'
