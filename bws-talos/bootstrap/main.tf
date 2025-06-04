@@ -14,6 +14,7 @@ locals {
 
   cinder_csi_plugin_namespace   = try(var.cinder_csi_plugin.namespace, "cinder-csi-plugin")
   cinder_csi_plugin_secret_name = try(var.cinder_csi_plugin.secret.name, "cinder-csi-plugin-secret")
+  cinder_csi_plugin_volume_type = try(var.cinder_csi_plugin.volume_type, "")
 
   external_dns_namespace             = try(var.external_dns.namespace, "external-dns")
   external_dns_domain_filters        = try(var.external_dns.domain_filters, "")
@@ -47,6 +48,7 @@ locals {
 
       cinder_csi_plugin_namespace   = local.cinder_csi_plugin_namespace
       cinder_csi_plugin_secret_name = local.cinder_csi_plugin_secret_name
+      cinder_csi_plugin_volume_type = local.cinder_csi_plugin_volume_type
       enable_cinder_csi_plugin      = var.addons.enable_cinder_csi_plugin ? "true" : "false"
 
       external_dns_namespace             = local.external_dns_namespace
