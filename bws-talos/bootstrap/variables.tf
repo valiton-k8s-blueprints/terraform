@@ -84,7 +84,7 @@ variable "external_secrets" {
 }
 
 variable "ingress_nginx" {
-  description = "Ingress Nginx add-on configuration values"
+  description = "Ingress nginx controller configuration values: namespace"
   type        = any
   default     = {}
 }
