@@ -60,10 +60,34 @@ variable "gitops_applications_repo_url" {
   default     = "https://github.com/valiton-k8s-blueprints/argocd"
 }
 
+variable "gitops_applications_repo_path" {
+  description = "Path in the Git repository for applications and values.yaml"
+  type        = string
+  default     = "aws"
+}
+
 variable "gitops_applications_repo_revision" {
   description = "Git repository revision/branch/ref for applications"
   type        = string
   default     = "main"
+}
+
+variable "gitops_argocd_chart_version" {
+  description = "Initial ArgoCD helm chart version to be deployed via gitOps Bridge"
+  type        = string
+  default     = "8.0.17"
+}
+variable "custom_gitops_metadata" {
+  description = <<EOT
+This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.
+
+custom_gitops_metadata = {
+  ssm_parameter_db_conection = "/MYAPP/DB_CONNECTION_STRING" 
+  ssm_parameter_api_key = "/MYAPP/API_KEY"
+}
+EOT
+  type        = any
+  default     = null
 }
 
 # external dns
@@ -85,14 +109,14 @@ variable "route53_zone" {
 variable "eks_image_arm64" {
   description = "Karpenter: Recommended Amazon Linux AMI ID for AL2023 ARM instances."
   type        = string
-  default     = "ami-09b9ca376adb3607c"
+  default     = "ami-03346acdd644443a9"
 }
 
 # aws ssm get-parameter --name "/aws/service/eks/optimized-ami/1.32/amazon-linux-2023/x86_64/standard/recommended/image_id" --region eu-central-1 --query "Parameter.Value" --output text
 variable "eks_image_x86_64" {
   description = "Karpenter: Recommended Amazon Linux AMI ID for AL2023 x86 based instances."
   type        = string
-  default     = "ami-0239e3e7b036949c1"
+  default     = "ami-04f94cfef8368f0e4"
 }
 
 # kube-prometheus-stack

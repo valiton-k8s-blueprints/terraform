@@ -86,7 +86,7 @@ variable "eks_managed_node_groups" {
 variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string
-  default     = "1.32"
+  default     = "1.33"
 }
 
 variable "cluster_enabled_log_types" {

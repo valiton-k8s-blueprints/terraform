@@ -18,7 +18,10 @@ locals {
   external_dns_domain_filters = var.external_dns_domain_filters
 
   gitops_applications_repo_url      = var.gitops_applications_repo_url
+  gitops_applications_repo_path     = var.gitops_applications_repo_path
   gitops_applications_repo_revision = var.gitops_applications_repo_revision
+
+  gitops_argocd_chart_version = var.gitops_argocd_chart_version
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
 
@@ -65,10 +68,12 @@ locals {
     },
     {
       applications_repo_url      = local.gitops_applications_repo_url
+      applications_repo_path     = local.gitops_applications_repo_path
       applications_repo_revision = local.gitops_applications_repo_revision
     },
     { kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace },
-    { cloud_provider = "aws" }
+    { cloud_provider = "aws" },
+    var.custom_gitops_metadata
   )
 
   argocd_apps = {
@@ -95,6 +100,10 @@ module "gitops_bridge_bootstrap" {
   }
 
   apps = local.argocd_apps
+
+  argocd = {
+    chart_version = local.gitops_argocd_chart_version
+  }
 }
 
 module "eks_blueprints_addons" {

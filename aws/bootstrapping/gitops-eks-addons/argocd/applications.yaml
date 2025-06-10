@@ -16,17 +16,10 @@ spec:
       project: default
       sources:
         - repoURL: '{{.metadata.annotations.applications_repo_url}}'
-          path: 'applications'
-          targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
-          directory:
-            recurse: false
-            exclude: '{{.metadata.annotations.excluded_applications}}'
-        - repoURL: '{{.metadata.annotations.applications_repo_url}}'
-          path: 'applications/{{.metadata.labels.cloud_provider}}'
+          path: '{{.metadata.annotations.applications_repo_path}}/applications'
           targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
           directory:
             recurse: true
-            exclude: '{{.metadata.annotations.excluded_applications}}'
       destination:
         namespace: argocd
         name: '{{.name}}'
