@@ -4,7 +4,7 @@ output "eks_gitops_bridge_metadata" {
   value       = local.addons_metadata
 }
 
-output "x_configure_kubectl" {
+output "configure_kubectl" {
   description = "Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig"
   value       = <<-EOT
     export KUBECONFIG="/tmp/${local.cluster_name}"
@@ -12,7 +12,7 @@ output "x_configure_kubectl" {
   EOT
 }
 
-output "x_configure_argocd" {
+output "configure_argocd" {
   description = "Terminal Setup"
   value       = <<-EOT
     export KUBECONFIG="/tmp/${local.cluster_name}"
@@ -27,7 +27,7 @@ output "x_configure_argocd" {
     EOT
 }
 
-output "x_access_argocd" {
+output "access_argocd" {
   description = "ArgoCD Access"
   value       = <<-EOT
     export KUBECONFIG="/tmp/${local.cluster_name}"
