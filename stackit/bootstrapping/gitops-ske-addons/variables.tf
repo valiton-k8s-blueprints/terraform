@@ -39,9 +39,12 @@ variable "addons" {
   description = "Kubernetes addons"
   type        = any
   default = {
-    enable_ingress_nginx         = true
-    enable_cert_manager          = true
-    enable_kube_prometheus_stack = true
+    enable_ingress_nginx                                 = true
+    enable_cert_manager                                  = false
+    enable_external_secrets                              = false
+    enable_external_secrets_with_stackit_secrets_manager = false
+    enable_kube_prometheus_stack                         = true
+    enable_metrics_server                                = false
   }
 
 }
@@ -56,7 +59,7 @@ variable "gitops_applications_repo_url" {
 variable "gitops_applications_repo_path" {
   description = "Path in the Git repository for applications and values.yaml"
   type        = string
-  default     = "aws"
+  default     = "stackit"
 }
 
 variable "gitops_applications_repo_revision" {
@@ -88,5 +91,35 @@ variable "kube_prometheus_stack" {
   description = "Kube prometheus stack add-on configuration values"
   type        = any
   default     = {}
+}
+
+# cert-manager
+variable "cert_manager_acme_registration_email" {
+  description = "In cert-manager, the email address associated with an ACME account is used for administrative notifications and is included in the ACME configuration."
+  type        = string
+  default     = null
+}
+
+variable "cert_manager_acme_stackit_project_id" {
+  description = "The STACKIT project id of the project in which the SKE cluster is running and the cert-manager is installed."
+  type        = string
+  default     = null
+}
+
+variable "cert_manager_stackit_webhook_service_account_token" {
+  description = "The token from the STACKIT service account, which is authorized to perform the DNS01 challenge in the configured STACKIT DNS zone."
+  type        = string
+  default     = null
+}
+
+
+variable "external_secrets_stackit_secrets_manager_config" {
+  description = "Configuration parameters used by externalSecrets together with STACKIT secrets manager"
+  type        = any
+  default = {
+    sm_user     = "dummy_passworduser"
+    sm_password = "dummy_password"
+  }
+
 }
 

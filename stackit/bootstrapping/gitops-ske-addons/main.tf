@@ -1,3 +1,4 @@
+
 locals {
   region = var.region
 
@@ -19,12 +20,17 @@ locals {
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
 
+  custom_gitops_metadata = var.custom_gitops_metadata
+
+
   ske_addons = {
-    enable_argocd                = try(var.addons.enable_argocd, true)
-    enable_ingress_nginx         = try(var.addons.enable_ingress_nginx, false)
-    enable_cert_manager          = try(var.addons.enable_cert_manager, false)
-    enable_kube_prometheus_stack = try(var.addons.enable_kube_prometheus_stack, false)
-    enable_metrics_server        = try(var.addons.enable_kube_prometheus_stack, false)
+    enable_argocd                                   = try(var.addons.enable_argocd, true)
+    enable_ingress_nginx                            = try(var.addons.enable_ingress_nginx, false)
+    enable_cert_manager                             = try(var.addons.enable_cert_manager, false)
+    enable_kube_prometheus_stack                    = try(var.addons.enable_kube_prometheus_stack, false)
+    enable_metrics_server                           = try(var.addons.enable_metrics_server, false)
+    enable_external_secrets                         = try(var.addons.enable_external_secrets, false)
+    enable_external_secrets_stackit_secrets_manager = try(var.addons.enable_external_secrets_stackit_secrets_manager, false)
   }
 
 
@@ -46,13 +52,42 @@ locals {
       applications_repo_revision = local.gitops_applications_repo_revision
     },
     { kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace },
-    { cloud_provider = "aws" },
-    var.custom_gitops_metadata
+    { cloud_provider = "stackit" },
+    local.custom_gitops_metadata,
   )
 
   argocd_apps = {
     applications = file("${path.module}/argocd/applications.yaml")
   }
+}
+
+
+resource "kubernetes_namespace_v1" "external_secrets" {
+  count = (local.ske_addons.enable_external_secrets && local.ske_addons.enable_external_secrets_stackit_secrets_manager) ? 1 : 0
+
+  metadata {
+    name = "external-secrets"
+  }
+}
+
+resource "kubernetes_secret" "vault_userpass_creds" {
+  count = (local.ske_addons.enable_external_secrets && local.ske_addons.enable_external_secrets_stackit_secrets_manager) ? 1 : 0
+
+  metadata {
+    name      = "vault-userpass-creds"
+    namespace = "external-secrets"
+  }
+
+  data = {
+    username = var.external_secrets_stackit_secrets_manager_config.sm_user
+    password = var.external_secrets_stackit_secrets_manager_config.sm_password
+  }
+
+  type = "Opaque"
+
+  depends_on = [
+    kubernetes_namespace_v1.external_secrets
+  ]
 }
 
 ################################################################################

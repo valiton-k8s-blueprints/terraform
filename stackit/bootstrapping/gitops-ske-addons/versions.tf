@@ -3,7 +3,7 @@ terraform {
   required_providers {
     stackit = {
       source  = "stackitcloud/stackit"
-      version = "~> 0.55.0"
+      version = "~> 0.54.0"
     }
     helm = {
       source  = "hashicorp/helm"
