@@ -19,6 +19,12 @@ locals {
   gitops_argocd_chart_version = var.gitops_argocd_chart_version
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
+  external_secrets_namespace = try(var.external_secrets.namespace, "external-secrets")
+
+  stackit_sm_user = try(var.external_secrets_stackit_secrets_manager_config.sm_user, "undefined")
+  stackit_sm_secret_name = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_name, "vault-userpass-creds")
+  stackit_sm_secret_namespace = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_namespace, "external-secrets")
+
 
   custom_gitops_metadata = var.custom_gitops_metadata
 
@@ -52,6 +58,12 @@ locals {
       applications_repo_revision = local.gitops_applications_repo_revision
     },
     { kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace },
+    { external_secrets_namespace = local.external_secrets_namespace },
+    { 
+      stackit_sm_user = local.stackit_sm_user
+      stackit_sm_secret_name = local.stackit_sm_secret_name
+      stackit_sm_secret_namespace = local.stackit_sm_secret_namespace
+    },
     { cloud_provider = "stackit" },
     local.custom_gitops_metadata,
   )
@@ -74,12 +86,12 @@ resource "kubernetes_secret" "vault_userpass_creds" {
   count = (local.ske_addons.enable_external_secrets && local.ske_addons.enable_external_secrets_stackit_secrets_manager) ? 1 : 0
 
   metadata {
-    name      = "vault-userpass-creds"
-    namespace = "external-secrets"
+    name      = local.stackit_sm_secret_name
+    namespace = local.stackit_sm_secret_namespace
   }
 
   data = {
-    username = var.external_secrets_stackit_secrets_manager_config.sm_user
+    username = local.stackit_sm_user
     password = var.external_secrets_stackit_secrets_manager_config.sm_password
   }
 

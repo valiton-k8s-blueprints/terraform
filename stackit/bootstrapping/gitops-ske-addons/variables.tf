@@ -112,14 +112,18 @@ variable "cert_manager_stackit_webhook_service_account_token" {
   default     = null
 }
 
+# external-secrets
+variable "external_secrets" {
+  description = "ExternalSecrets add-on configuration values"
+  type        = any
+  default     = {}
+}
 
 variable "external_secrets_stackit_secrets_manager_config" {
   description = "Configuration parameters used by externalSecrets together with STACKIT secrets manager"
   type        = any
-  default = {
-    sm_user     = "dummy_passworduser"
-    sm_password = "dummy_password"
-  }
+  default = {}
 
 }
+
 
