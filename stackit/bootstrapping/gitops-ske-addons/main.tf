@@ -19,11 +19,12 @@ locals {
   gitops_argocd_chart_version = var.gitops_argocd_chart_version
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
-  external_secrets_namespace = try(var.external_secrets.namespace, "external-secrets")
+  external_secrets_namespace      = try(var.external_secrets.namespace, "external-secrets")
 
-  stackit_sm_user = try(var.external_secrets_stackit_secrets_manager_config.sm_user, "undefined")
-  stackit_sm_secret_name = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_name, "vault-userpass-creds")
+  stackit_sm_user             = try(var.external_secrets_stackit_secrets_manager_config.sm_user, "undefined")
+  stackit_sm_secret_name      = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_name, "vault-userpass-creds")
   stackit_sm_secret_namespace = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_namespace, "external-secrets")
+  stackit_sm_instance_id      = try(var.external_secrets_stackit_secrets_manager_config.sm_instance_id, "undefined")
 
 
   custom_gitops_metadata = var.custom_gitops_metadata
@@ -59,10 +60,11 @@ locals {
     },
     { kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace },
     { external_secrets_namespace = local.external_secrets_namespace },
-    { 
-      stackit_sm_user = local.stackit_sm_user
-      stackit_sm_secret_name = local.stackit_sm_secret_name
+    {
+      stackit_sm_user             = local.stackit_sm_user
+      stackit_sm_secret_name      = local.stackit_sm_secret_name
       stackit_sm_secret_namespace = local.stackit_sm_secret_namespace
+      stackit_sm_instance_id      = local.stackit_sm_instance_id
     },
     { cloud_provider = "stackit" },
     local.custom_gitops_metadata,

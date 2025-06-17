@@ -122,7 +122,7 @@ variable "external_secrets" {
 variable "external_secrets_stackit_secrets_manager_config" {
   description = "Configuration parameters used by externalSecrets together with STACKIT secrets manager"
   type        = any
-  default = {}
+  default     = {}
 
 }
 

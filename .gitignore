@@ -2,3 +2,5 @@ local/
 .DS_Store
 terragrunt*
 terraform.tfvars
+serviceaccount.sh
+vault.sh
