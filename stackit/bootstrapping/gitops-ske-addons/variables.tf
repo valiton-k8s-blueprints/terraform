@@ -40,11 +40,10 @@ variable "addons" {
   type        = any
   default = {
     enable_ingress_nginx                                 = true
-    enable_cert_manager                                  = false
-    enable_external_secrets                              = false
-    enable_external_secrets_with_stackit_secrets_manager = false
+    enable_cert_manager                                  = true
+    enable_external_secrets                              = true
+    enable_external_secrets_with_stackit_secrets_manager = true
     enable_kube_prometheus_stack                         = true
-    enable_metrics_server                                = false
   }
 
 }
