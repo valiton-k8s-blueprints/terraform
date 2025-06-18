@@ -5,7 +5,7 @@ This plugin is based on the concept of Gitops-Bridge. This means that the EKS pl
 
 ## Prerequisite
 This module is an addon. This means that the base module should be installed beforehand.
-See the example implementation: [example folder](../../examples/README.md#base-module--gitops-eks-addons)
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
 
 ## Features
 - Installs all AWS resources that are required by the enabled addons
@@ -14,7 +14,7 @@ See the example implementation: [example folder](../../examples/README.md#base-m
 - Creates the intial set App of Apps (addons, workloads, etc.)
 
 ## Usage
-See the example implementation: [example folder](../../examples/README.md#base-module--gitops-eks-addons)
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
 
 ## Requirements
 
