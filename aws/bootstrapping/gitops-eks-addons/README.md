@@ -5,7 +5,7 @@ This plugin is based on the concept of Gitops-Bridge. This means that the EKS pl
 
 ## Prerequisite
 This module is an addon. This means that the base module should be installed beforehand.
-See the example implementation: [example folder](../../examples/README.md#base-module--gitops-eks-addons)
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
 
 ## Features
 - Installs all AWS resources that are required by the enabled addons
@@ -14,7 +14,7 @@ See the example implementation: [example folder](../../examples/README.md#base-m
 - Creates the intial set App of Apps (addons, workloads, etc.)
 
 ## Usage
-See the example implementation: [example folder](../../examples/README.md#base-module--gitops-eks-addons)
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
 
 ## Requirements
 
@@ -100,3 +100,14 @@ See the example implementation: [example folder](../../examples/README.md#base-m
 | <a name="output_x_access_argocd"></a> [x\_access\_argocd](#output\_x\_access\_argocd) | ArgoCD Access |
 | <a name="output_x_configure_argocd"></a> [x\_configure\_argocd](#output\_x\_configure\_argocd) | Terminal Setup |
 | <a name="output_x_configure_kubectl"></a> [x\_configure\_kubectl](#output\_x\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
+
+## Best Practices
+- Use **remote state storage** (e.g., S3 + DynamoDB) to manage state files.
+- Follow the **principle of least privilege** when defining IAM roles.
+- Enable **logging and monitoring** with AWS CloudWatch and GuardDuty.
+
+## Contributing
+Feel free to submit **issues and pull requests** to improve this module.
+
+## License
+This module is licensed under the **MIT License**. See the [License](https://github.com/valiton/k8s-terraform-blueprints/blob/main/License) file for details.
