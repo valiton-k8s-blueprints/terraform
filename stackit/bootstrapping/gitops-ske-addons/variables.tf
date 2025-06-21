@@ -41,6 +41,7 @@ variable "addons" {
   default = {
     enable_ingress_nginx                            = true
     enable_cert_manager                             = true
+    enable_cert_manager_default_cert                = true
     enable_external_secrets                         = true
     enable_external_secrets_stackit_secrets_manager = true
     enable_kube_prometheus_stack                    = true
@@ -96,7 +97,7 @@ variable "kube_prometheus_stack" {
 variable "cert_manager_acme_registration_email" {
   description = "In cert-manager, the email address associated with an ACME account is used for administrative notifications and is included in the ACME configuration."
   type        = string
-  default     = null
+  default     = "test@example.com"
 }
 
 variable "cert_manager_acme_stackit_project_id" {
@@ -105,10 +106,28 @@ variable "cert_manager_acme_stackit_project_id" {
   default     = null
 }
 
-variable "cert_manager_stackit_webhook_service_account_token" {
-  description = "The token from the STACKIT service account, which is authorized to perform the DNS01 challenge in the configured STACKIT DNS zone."
+variable "cert_manager_stackit_webhook_service_account_secret" {
+  description = "The secret from the STACKIT service account, which includes the token to perform the DNS01 challenge in the configured STACKIT DNS zone."
   type        = string
-  default     = null
+  default     = "certmanager/serviceaccount"
+}
+
+variable "cert_manager_use_default_cert" {
+  description = "When it is set to true, cert manager we use a default cert."
+  type        = bool
+  default     = true
+}
+
+variable "cert_manager_default_cert_domain_list" {
+  description = "When `enable_cert_manager_default_cert` is set to true, cert-manager will use these domains for the default certificate."
+  type        = list(any)
+  default     = ["test.example.com", "*.test.example.com"]
+}
+
+variable "cert_manager_stackit_service_account_email" {
+  description = "The e-mail address for the STACKIT service account used by the Cert Manager (e.g. DNS01 challenge in the STACKIT dns zone). Note: The service account must exist beforehand and in the case of DNS01 Challenge it should also already have permission for dns.admin or dns.reader."
+  type        = string
+  default     = "example@sa.stackit.cloud"
 }
 
 # external-secrets

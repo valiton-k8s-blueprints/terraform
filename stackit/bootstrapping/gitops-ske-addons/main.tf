@@ -26,6 +26,11 @@ locals {
   stackit_sm_secret_namespace = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_namespace, "external-secrets")
   stackit_sm_instance_id      = try(var.external_secrets_stackit_secrets_manager_config.sm_instance_id, "undefined")
 
+  cert_manager_acme_registration_email                = var.cert_manager_acme_registration_email
+  cert_manager_default_cert_domain_list               = var.cert_manager_default_cert_domain_list
+  cert_manager_stackit_webhook_service_account_secret = var.cert_manager_stackit_webhook_service_account_secret
+  cert_manager_stackit_service_account_email          = var.cert_manager_stackit_service_account_email
+
 
   custom_gitops_metadata = var.custom_gitops_metadata
 
@@ -34,6 +39,7 @@ locals {
     enable_argocd                                   = try(var.addons.enable_argocd, true)
     enable_ingress_nginx                            = try(var.addons.enable_ingress_nginx, false)
     enable_cert_manager                             = try(var.addons.enable_cert_manager, false)
+    enable_cert_manager_default_cert                = try(var.addons.enable_cert_manager_default_cert, false)
     enable_kube_prometheus_stack                    = try(var.addons.enable_kube_prometheus_stack, false)
     enable_metrics_server                           = try(var.addons.enable_metrics_server, false)
     enable_external_secrets                         = try(var.addons.enable_external_secrets, false)
@@ -66,6 +72,11 @@ locals {
       stackit_sm_secret_namespace = local.stackit_sm_secret_namespace
       stackit_sm_instance_id      = local.stackit_sm_instance_id
     },
+    {
+      cert_manager_stackit_webhook_service_account_secret = local.cert_manager_stackit_webhook_service_account_secret
+      cert_manager_acme_registration_email                = local.cert_manager_acme_registration_email
+      cert_manager_default_cert_domain_list               = jsonencode(local.cert_manager_default_cert_domain_list)
+    },
     { cloud_provider = "stackit" },
     local.custom_gitops_metadata,
   )
@@ -75,7 +86,9 @@ locals {
   }
 }
 
-
+################################################################################
+# STACKIT Secrets Manager +  ExternalSecrets 
+################################################################################
 resource "kubernetes_namespace_v1" "external_secrets" {
   count = (local.ske_addons.enable_external_secrets && local.ske_addons.enable_external_secrets_stackit_secrets_manager) ? 1 : 0
 
@@ -102,6 +115,42 @@ resource "kubernetes_secret" "vault_userpass_creds" {
   depends_on = [
     kubernetes_namespace_v1.external_secrets
   ]
+}
+
+################################################################################
+# Cert Manager - Webhook Secret with STACKIT service acoount for DNS01 challenge
+# https://docs.stackit.cloud/stackit/en/how-to-use-stackit-dns-for-dns01-to-act-as-a-dns01-acme-issuer-with-cert-manager-152633984.html
+################################################################################
+resource "time_rotating" "rotate" {
+  count = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
+
+  rotation_days = 80
+}
+
+resource "stackit_service_account_access_token" "cert_manager_sa_token" {
+  count                 = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
+  project_id            = local.project_id
+  service_account_email = local.cert_manager_stackit_service_account_email
+  ttl_days              = 180
+
+  rotate_when_changed = {
+    rotation = time_rotating.rotate[count.index].id
+  }
+}
+
+
+resource "vault_kv_secret_v2" "certmanager_webhook_secret" {
+  count               = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
+  mount               = local.stackit_sm_instance_id
+  name                = local.cert_manager_stackit_webhook_service_account_secret
+  cas                 = 1
+  delete_all_versions = true
+  data_json = jsonencode(
+    {
+      token_id = stackit_service_account_access_token.cert_manager_sa_token[count.index].access_token_id,
+      token    = stackit_service_account_access_token.cert_manager_sa_token[count.index].token,
+    }
+  )
 }
 
 ################################################################################
