@@ -86,6 +86,7 @@ locals {
   }
 }
 
+
 ################################################################################
 # STACKIT Secrets Manager +  ExternalSecrets 
 ################################################################################
@@ -166,5 +167,35 @@ module "gitops_bridge_bootstrap" {
     addons       = local.addons
   }
 
+  argocd = {
+    values = [
+      yamlencode({
+        configs = {
+          cm = {
+            "resource.customizations" = <<-EOF
+              batch/Job:
+                health.lua: |
+                  hs = {}
+                  if obj.status ~= nil then
+                    if obj.status.succeeded ~= nil and obj.status.succeeded > 0 then
+                      hs.status = "Healthy"
+                      hs.message = "Job completed"
+                      return hs
+                    end
+                    if obj.status.failed ~= nil and obj.status.failed > 0 then
+                      hs.status = "Degraded"
+                      hs.message = "Job failed"
+                      return hs
+                    end
+                  end
+                  hs.status = "Progressing"
+                  hs.message = "Job is still running"
+                  return hs
+            EOF
+          }
+        }
+      })
+    ]
+  }
   apps = local.argocd_apps
 }
