@@ -27,9 +27,14 @@ locals {
   stackit_sm_instance_id      = try(var.external_secrets_stackit_secrets_manager_config.sm_instance_id, "undefined")
 
   cert_manager_acme_registration_email                = var.cert_manager_acme_registration_email
-  cert_manager_default_cert_domain_list               = var.cert_manager_default_cert_domain_list
   cert_manager_stackit_webhook_service_account_secret = var.cert_manager_stackit_webhook_service_account_secret
   cert_manager_stackit_service_account_email          = var.cert_manager_stackit_service_account_email
+  cert_manager_dns01_issuer_name                      = var.cert_manager_dns01_issuer_name
+  cert_manager_http01_issuer_name                     = var.cert_manager_http01_issuer_name
+  cert_manager_default_cert_domain_list               = var.cert_manager_default_cert_domain_list
+  cert_manager_default_cert_solver_type               = var.cert_manager_default_cert_solver_type
+  cert_manager_default_cert_name                      = var.cert_manager_default_cert_name
+  cert_manager_default_cert_namespace                 = var.cert_manager_default_cert_namespace
 
 
   custom_gitops_metadata = var.custom_gitops_metadata
@@ -75,7 +80,12 @@ locals {
     {
       cert_manager_stackit_webhook_service_account_secret = local.cert_manager_stackit_webhook_service_account_secret
       cert_manager_acme_registration_email                = local.cert_manager_acme_registration_email
+      cert_manager_dns01_issuer_name                      = var.cert_manager_dns01_issuer_name
+      cert_manager_http01_issuer_name                     = var.cert_manager_http01_issuer_name
       cert_manager_default_cert_domain_list               = jsonencode(local.cert_manager_default_cert_domain_list)
+      cert_manager_default_cert_solver_type               = local.cert_manager_default_cert_solver_type
+      cert_manager_default_cert_name                      = local.cert_manager_default_cert_name
+      cert_manager_default_cert_namespace                 = local.cert_manager_default_cert_namespace
     },
     { cloud_provider = "stackit" },
     local.custom_gitops_metadata,
@@ -140,7 +150,7 @@ resource "stackit_service_account_access_token" "cert_manager_sa_token" {
 }
 
 
-resource "vault_kv_secret_v2" "certmanager_webhook_secret" {
+resource "vault_kv_secret_v2" "cert_manager_webhook_secret" {
   count               = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
   mount               = local.stackit_sm_instance_id
   name                = local.cert_manager_stackit_webhook_service_account_secret
@@ -152,6 +162,14 @@ resource "vault_kv_secret_v2" "certmanager_webhook_secret" {
       token    = stackit_service_account_access_token.cert_manager_sa_token[count.index].token,
     }
   )
+}
+
+resource "kubernetes_namespace_v1" "cert_manager_default_certificate" {
+  count = (local.ske_addons.enable_cert_manager_default_cert && local.ske_addons.enable_cert_manager) ? 1 : 0
+
+  metadata {
+    name = local.cert_manager_default_cert_namespace
+  }
 }
 
 ################################################################################
@@ -168,34 +186,9 @@ module "gitops_bridge_bootstrap" {
   }
 
   argocd = {
-    values = [
-      yamlencode({
-        configs = {
-          cm = {
-            "resource.customizations" = <<-EOF
-              batch/Job:
-                health.lua: |
-                  hs = {}
-                  if obj.status ~= nil then
-                    if obj.status.succeeded ~= nil and obj.status.succeeded > 0 then
-                      hs.status = "Healthy"
-                      hs.message = "Job completed"
-                      return hs
-                    end
-                    if obj.status.failed ~= nil and obj.status.failed > 0 then
-                      hs.status = "Degraded"
-                      hs.message = "Job failed"
-                      return hs
-                    end
-                  end
-                  hs.status = "Progressing"
-                  hs.message = "Job is still running"
-                  return hs
-            EOF
-          }
-        }
-      })
-    ]
+    chart_version = "8.1.1"
   }
+
+
   apps = local.argocd_apps
 }

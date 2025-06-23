@@ -112,16 +112,52 @@ variable "cert_manager_stackit_webhook_service_account_secret" {
   default     = "certmanager/serviceaccount"
 }
 
+variable "cert_manager_dns01_issuer_name" {
+  description = "The name of the issuer that ArgoCD should use to create the DNS01 challenge issuer."
+  type        = string
+  default     = "letsencrypt-dns01"
+}
+
+variable "cert_manager_http01_issuer_name" {
+  description = "The name of the issuer that ArgoCD should use to create the http01 challenge issuer."
+  type        = string
+  default     = "letsencrypt-http01"
+}
+
 variable "cert_manager_use_default_cert" {
   description = "When it is set to true, cert manager we use a default cert."
   type        = bool
   default     = true
 }
 
+variable "cert_manager_default_cert_solver_type" {
+  description = "ACME challenge solver type for the default certificate"
+  type        = string
+  default     = "dns01"
+
+  validation {
+    condition     = contains(["dns01", "http01"], var.cert_manager_default_cert_solver_type)
+    error_message = "solver_type must be either 'dns01' or 'http01'."
+  }
+}
+
+
 variable "cert_manager_default_cert_domain_list" {
   description = "When `enable_cert_manager_default_cert` is set to true, cert-manager will use these domains for the default certificate."
   type        = list(any)
   default     = ["test.example.com", "*.test.example.com"]
+}
+
+variable "cert_manager_default_cert_name" {
+  description = "When `enable_cert_manager_default_cert` is set to true, cert-manager will use this name for the default certificate."
+  type        = string
+  default     = "letsencrypt-default-cert"
+}
+
+variable "cert_manager_default_cert_namespace" {
+  description = "When `enable_cert_manager_default_cert` is set to true, the bootstrapper will create this namespace and the  cert-manager will put the default certificate into  this namespace."
+  type        = string
+  default     = "myapp"
 }
 
 variable "cert_manager_stackit_service_account_email" {
