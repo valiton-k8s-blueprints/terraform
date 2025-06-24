@@ -28,7 +28,7 @@ locals {
 
   cert_manager_acme_registration_email                = var.cert_manager_acme_registration_email
   cert_manager_stackit_webhook_service_account_secret = var.cert_manager_stackit_webhook_service_account_secret
-  cert_manager_stackit_service_account_emyail         = var.cert_manager_stackit_service_account_email
+  cert_manager_stackit_service_account_email         = var.cert_manager_stackit_service_account_email
   cert_manager_dns01_issuer_name                      = var.cert_manager_dns01_issuer_name
   cert_manager_http01_issuer_name                     = var.cert_manager_http01_issuer_name
   cert_manager_default_cert_domain_list               = var.cert_manager_default_cert_domain_list
