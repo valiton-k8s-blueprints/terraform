@@ -9,6 +9,10 @@ This Terraform module sets up a STACKIT SKE cluster, providing a base for deploy
 - Configures **externalDNS** as extension
 - Deploys predefined **Nodepools**
 
+## Usage
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf)
+
+
 ## Requirements
 
 | Name | Version |

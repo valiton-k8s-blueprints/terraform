@@ -2,9 +2,9 @@
 
 ## Overview
 This module is an extension to the Terraform base module for STACKIT. It is also based on the gitops-bridge concept. 
-The example linked below also implements the approach how you can use STACKIT DNS for DNS01 as DNS01 ACME Issuer with Cert-Manager, based on the DNS tutorial from STACKIT:
+The [example](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf) linked below also implements the approach how you can use STACKIT DNS for DNS01 as DNS01 ACME Issuer with Cert-Manager, based on the DNS tutorial from STACKIT:
 https://docs.stackit.cloud/stackit/en/how-to-use-stackit-dns-for-dns01-to-act-as-a-dns01-acme-issuer-with-cert-manager-152633984.html
-Additionally, in the example we use the ExternalSecrets plugin together with the STACKIT Secrets Manager, which in turn is based on HashiCorp Vault.
+Additionally, in the  [example](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf) we use the ExternalSecrets plugin together with the STACKIT Secrets Manager, which in turn is based on HashiCorp Vault.
 
 ## Prerequisite:
 Create the authentication for the Terraform provider: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs#authentication
@@ -21,6 +21,10 @@ You also need a STACKIT service account (for the Cert Manager webhook to perform
   - Token creation for ServiceAccount/STACKIT Cert Manager Webhook and storing it into the STACKIT Secrets Manager
 
 The STACKIT Cert Manager webhook receives the token via a secret created by the ExternalSecrets plugin. ExternalSecrets uses the corresponding Vault SecretsStore to work with the STACKIT Secret Manager.
+
+## Usage
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf)
+
 
 ## Requirements
 
