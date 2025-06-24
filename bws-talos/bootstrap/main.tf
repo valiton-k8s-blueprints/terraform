@@ -40,6 +40,8 @@ module "cluster_secrets" {
 module "gitops_bridge_bootstrap" {
   source = "git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge.git?ref=main"
 
+  depends_on = [module.cluster_secrets]
+
   cluster = {
     cluster_name = var.base_name
     environment  = var.environment
