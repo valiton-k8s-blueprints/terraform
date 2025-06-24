@@ -1,21 +1,3 @@
-# Terraform AWS Gitops EKS Addons Module
-
-## Overview
-This plugin is based on the concept of Gitops-Bridge. This means that the EKS plugins are not deployed into the cluster via Terraform, but only their required AWS resources such as IAM roles etc. are created. The actual plugins are rolled out using the gitOps approach with Argo CD.
-
-## Prerequisite
-This module is an addon. This means that the base module should be installed beforehand.
-See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/aws/main.tf)
-
-## Features
-- Installs all AWS resources that are required by the enabled addons
-- Installs an intial deployment of argocd, this deployment (gets replaced by argocd applicationset)
-- Creates the ArgoCD cluster secret (including in-cluster)
-- Creates the intial set App of Apps (addons, workloads, etc.)
-
-## Usage
-See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/aws/main.tf)
-
 ## Requirements
 
 | Name | Version |
@@ -77,13 +59,3 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="output_configure_argocd"></a> [configure\_argocd](#output\_configure\_argocd) | Terminal Setup |
 | <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_gitops_bridge_metadata"></a> [eks\_gitops\_bridge\_metadata](#output\_eks\_gitops\_bridge\_metadata) | GitOps Bridge metadata |
-
-## Best Practices
-- Use **remote state storage** (e.g. S3 or GitLab) to manage state files.
-- Follow the **principle of least privilege** when defining STACKIT ServiceAccounts.
-
-## Contributing
-Feel free to submit **issues and pull requests** to improve this module.
-
-## License
-This module is licensed under the **MIT License**. See the [License](https://github.com/valiton/k8s-terraform-blueprints/blob/main/License)
