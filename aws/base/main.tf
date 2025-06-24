@@ -77,7 +77,7 @@ module "eks" {
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
     }
   }
-  node_security_group_tags       = { Name = format("%s-node-security-group", local.name) }
+  node_security_group_tags = { Name = format("%s-node-security-group", local.name) }
   tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
     # security group that Karpenter should utilize with the following tag
