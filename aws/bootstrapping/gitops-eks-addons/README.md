@@ -5,7 +5,7 @@ This plugin is based on the concept of Gitops-Bridge. This means that the EKS pl
 
 ## Prerequisite
 This module is an addon. This means that the base module should be installed beforehand.
-See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/aws/main.tf)
 
 ## Features
 - Installs all AWS resources that are required by the enabled addons
@@ -14,30 +14,8 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 - Creates the intial set App of Apps (addons, workloads, etc.)
 
 ## Usage
-See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/tree/main/aws#base-module--gitops-eks-addons)
 
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.97.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.17.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.36.0 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.97.0 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_auth"></a> [aws\_auth](#module\_aws\_auth) | terraform-aws-modules/eks/aws//modules/aws-auth | n/a |
-| <a name="module_eks_blueprints_addons"></a> [eks\_blueprints\_addons](#module\_eks\_blueprints\_addons) | aws-ia/eks-blueprints-addons/aws | 1.21.0 |
-| <a name="module_gitops_bridge_bootstrap"></a> [gitops\_bridge\_bootstrap](#module\_gitops\_bridge\_bootstrap) | git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge | main |
+See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/aws/main.tf)
 
 ## Requirements
 
@@ -96,6 +74,9 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 
 | Name | Description |
 |------|-------------|
+| <a name="output_access_argocd"></a> [access\_argocd](#output\_access\_argocd) | ArgoCD Access |
+| <a name="output_configure_argocd"></a> [configure\_argocd](#output\_configure\_argocd) | Terminal Setup |
+| <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_gitops_bridge_metadata"></a> [eks\_gitops\_bridge\_metadata](#output\_eks\_gitops\_bridge\_metadata) | GitOps Bridge metadata |
 | <a name="output_x_access_argocd"></a> [x\_access\_argocd](#output\_x\_access\_argocd) | ArgoCD Access |
 | <a name="output_x_configure_argocd"></a> [x\_configure\_argocd](#output\_x\_configure\_argocd) | Terminal Setup |
