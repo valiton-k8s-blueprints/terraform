@@ -8,7 +8,7 @@ Additionally, in the  [example](https://github.com/valiton-k8s-blueprints/exampl
 
 ## Prerequisite:
 Create the authentication for the Terraform provider: https://registry.terraform.io/providers/stackitcloud/stackit/latest/docs#authentication
-As this module is an addon, the STACKIT base module must also be installed. Important for the [example](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf) is that you activate DNS for your SKE cluster with a domain provided by STACKIT.
+As this module is an addon, the STACKIT base module must also be installed. Important for the [example](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf) is that you activate DNS for your SKE cluster with a corresponding STACKIT dns zone.
 You also need a STACKIT service account (for the Cert Manager webhook to perform the DNS01 challenge) with the permission for dns.admin or dns.editor. The Terraform bootstrapper will then create an access token for the service account, which will be used by the STACKIT Cert Manager webhook.
 
 ## Features:
