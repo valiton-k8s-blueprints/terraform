@@ -16,7 +16,7 @@ spec:
       project: default
       sources:
         - repoURL: '{{.metadata.annotations.applications_repo_url}}'
-          path: '{{.metadata.annotations.applications_repo_path}}/applications'
+          path: '{{.metadata.annotations.applications_repo_path}}/applicationsets'
           targetRevision: '{{.metadata.annotations.applications_repo_revision}}'
           directory:
             recurse: true
