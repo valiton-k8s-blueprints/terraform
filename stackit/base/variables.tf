@@ -20,12 +20,12 @@ variable "base_name" {
 variable "availability_zones" {
   description = "Number of availability zones"
   type        = list(string)
-  default     = ["eu01-1", "eu01-2", "eu01-3", "eu01-m"]
+  default     = ["eu01-1", "eu01-2", "eu01-3"]
 }
 
 variable "base_node_pool_machine_type" {
   type        = string
-  default     = "c1.2"
+  default     = "c2i.2"
   description = "List with instance types that are used in the base node group"
 }
 
@@ -49,7 +49,7 @@ variable "base_node_pool_max_size" {
 
 variable "base_node_pool_max_surge" {
   type        = number
-  default     = 2
+  default     = 3
   description = "Maximum number of additional VMs that are created during an update. If set (larger than 0), then it must be at least the amount of zones configured for the nodepool. The `max_surge` and `max_unavailable` fields cannot both be unset at the same time."
 }
 
@@ -82,7 +82,7 @@ variable "base_node_pool_labels" {
 variable "ske_managed_node_pools" {
   description = "SKE managed nodepools in addition to the base nodepool"
   type        = any
-  default     = {}
+  default     = []
 }
 variable "kubernetes_version" {
   description = "Kubernetes version"

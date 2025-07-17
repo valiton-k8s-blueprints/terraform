@@ -4,7 +4,7 @@ locals {
 
   cluster_version = var.kubernetes_version
 
-  base_node_pool = {
+  base_node_pool = [{
     name               = "${local.name}"
     os_name            = var.base_node_pool_os_name
     max_surge          = var.base_node_pool_max_surge
@@ -16,8 +16,7 @@ locals {
     volume_size        = var.base_node_pool_volume_size
     volume_type        = var.base_node_pool_volume_type
     labels             = var.base_node_pool_labels
-  }
-
+  }]
 
 }
 
@@ -25,7 +24,7 @@ resource "stackit_ske_cluster" "managed_cluster" {
   project_id             = local.project_id
   name                   = local.name
   kubernetes_version_min = local.cluster_version
-  node_pools             = var.ske_managed_node_pools == {} ? [local.base_node_pool] : merge([var.ske_managed_node_pools, local.base_node_pool])
+  node_pools             = concat(local.base_node_pool, var.ske_managed_node_pools)
   maintenance = {
     enable_kubernetes_version_updates    = var.maintenance_enable_kubernetes_version_updates
     enable_machine_image_version_updates = var.maintenance_enable_machine_image_version_updates
