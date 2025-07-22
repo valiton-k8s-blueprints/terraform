@@ -25,7 +25,7 @@ locals {
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
   enable_prometheus_federation    = try(var.kube_prometheus_stack.enable_prometheus_federation, null)
-  additional_scrape_configs       = local.enable_prometheus_federation ? var.kube_prometheus_stack.additional_scrape_configs : null
+  additional_scrape_configs       = local.enable_prometheus_federation ? var.additional_scrape_configs : null
 
   aws_addons = {
     enable_aws_efs_csi_driver           = try(var.addons.enable_aws_efs_csi_driver, false)
