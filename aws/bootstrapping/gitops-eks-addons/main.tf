@@ -76,7 +76,7 @@ locals {
     {
       kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace
       enable_prometheus_federation    = local.enable_prometheus_federation
-      additional_scrape_configs       = jsonencode(local.additional_scrape_configs)
+      additional_scrape_configs       = yamlencode(local.additional_scrape_configs)
     },
     { cloud_provider = "aws" },
     var.custom_gitops_metadata
