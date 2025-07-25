@@ -125,17 +125,3 @@ variable "kube_prometheus_stack" {
   type        = any
   default     = {}
 }
-
-variable "additional_scrape_configs" {
-  description = "Additional scrape configs for prometheus federation"
-  type = object({
-    jobName  = string
-    matchers = list(string)
-    targets  = list(string)
-  })
-  default = {
-    jobName  = "prometheus",
-    matchers = ["{job=\"apiserver\"}"],
-    targets  = []
-  }
-}

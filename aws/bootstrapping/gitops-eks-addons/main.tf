@@ -24,9 +24,6 @@ locals {
   gitops_argocd_chart_version = var.gitops_argocd_chart_version
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
-  enable_prometheus_federation    = try(var.kube_prometheus_stack.enable_prometheus_federation, null)
-  additional_scrape_configs       = local.enable_prometheus_federation ? var.additional_scrape_configs : null
-
   aws_addons = {
     enable_aws_efs_csi_driver           = try(var.addons.enable_aws_efs_csi_driver, false)
     enable_external_dns                 = try(var.addons.enable_external_dns, false)
@@ -75,8 +72,6 @@ locals {
     },
     {
       kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace
-      enable_prometheus_federation    = local.enable_prometheus_federation
-      additional_scrape_configs       = jsonencode(local.additional_scrape_configs)
     },
     { cloud_provider = "aws" },
     var.custom_gitops_metadata
