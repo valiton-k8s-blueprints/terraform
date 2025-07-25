@@ -137,6 +137,7 @@ module "eks_blueprints_addons" {
 
 module "aws_auth" {
   source                    = "terraform-aws-modules/eks/aws//modules/aws-auth"
+  version                   = "20.36.0"
   manage_aws_auth_configmap = true
   aws_auth_roles = [
     {
