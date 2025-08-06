@@ -18,6 +18,8 @@ locals {
     labels             = var.base_node_pool_labels
   }]
 
+  network_id = var.create_network ? stackit_network.managed_cluster_network[0].network_id : var.network_id
+
 }
 
 resource "stackit_ske_cluster" "managed_cluster" {
@@ -39,6 +41,18 @@ resource "stackit_ske_cluster" "managed_cluster" {
     }
   }
 
+  network = {
+    id = local.network_id
+  }
+
+}
+
+resource "stackit_network" "managed_cluster_network" {
+  count = var.create_network ? 1 : 0
+  project_id = local.project_id
+  name       = local.name
+  ipv4_prefix_length = var.network_ipv4_prefix_length
+  ipv4_nameservers = var.ipv4_nameservers
 }
 
 
