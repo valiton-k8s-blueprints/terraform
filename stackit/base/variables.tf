@@ -17,6 +17,33 @@ variable "base_name" {
     error_message = "The base name must be at most 15 characters (runes) long."
   }
 }
+
+variable "create_network" {
+  type        = bool
+  default     = false
+  description = "If the project is running within a STACKIT Network Area, the network in which the SKE Cluster should run must already exist. If set to true, a network is created and assigned to the SKE cluster and ```network_id``` will be ignored"
+}
+
+variable "network_ipv4_prefix_length" {
+  type        = number
+  default     = 25
+  description = "The IPv4 prefix length of the network."
+}
+
+variable "ipv4_nameservers" {
+  type        = list(string)
+  default     = ["9.9.9.9", "1.1.1.1"]
+  description = "The IPv4 nameservers of the network."
+}
+
+variable "network_id" {
+  type        = string
+  default     = null
+  description = "The network id of the network in which the SKE Cluster should run, in case the project is running within a STACKIT Network Area. This can only be used if the project is running within an STACKIT Network Area."
+}
+
+
+
 variable "availability_zones" {
   description = "Number of availability zones"
   type        = list(string)

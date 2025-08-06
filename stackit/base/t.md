@@ -1,18 +1,3 @@
-# Terraform STACKIT Base Module
-
-## Overview
-This Terraform module sets up a STACKIT SKE cluster, providing a base for deploying workloads on STACKIT. It follows best practices to ensure security, scalability, and maintainability.
-
-## Features
-- Creates a **virtual Network**
-- Creates a **SKE** cluster
-- Configures **externalDNS** as extension
-- Deploys predefined **Nodepools**
-
-## Usage
-See the example implementation: [example folder](https://github.com/valiton-k8s-blueprints/examples/blob/main/stackit/main.tf)
-
-
 ## Requirements
 
 | Name | Version |
@@ -76,13 +61,3 @@ No modules.
 | <a name="output_cluster_kubernetes_version_used"></a> [cluster\_kubernetes\_version\_used](#output\_cluster\_kubernetes\_version\_used) | Full Kubernetes version used. |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | Name of the SKE Cluster. |
 | <a name="output_cluster_nodepools"></a> [cluster\_nodepools](#output\_cluster\_nodepools) | Defined nodepools fot the SKE cluster |
-
-## Best Practices
-- Use **remote state storage** (e.g.ObjectStore or GitLab) to manage state files.
-- Follow the **principle of least privilege** when defining STACKIT ServiceAccounts.
-
-## Contributing
-Feel free to submit **issues and pull requests** to improve this module.
-
-## License
-This module is licensed under the **MIT License**. See the [License](https://github.com/valiton/k8s-terraform-blueprints/blob/main/License)
