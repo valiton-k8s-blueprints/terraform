@@ -12,6 +12,8 @@ spec:
   template:
     metadata:
       name: 'applications'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io/background
     spec:
       project: default
       sources:
