@@ -143,7 +143,7 @@ variable "maintenance_end" {
 
 variable "extensions_dns_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Flag to enable/disable DNS extensions. If set to `true`, SKE will then use an integrated version of externalDNS."
 }
 
