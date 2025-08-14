@@ -49,7 +49,8 @@ locals {
     local.oss_addons,
     { kubernetes_version = local.cluster_version },
     { aws_cluster_name = local.cluster_name },
-    { cloud_provider = "aws" }
+    { cloud_provider = "aws" },
+    var.custom_gitops_labels
   )
 
   addons_metadata = merge(

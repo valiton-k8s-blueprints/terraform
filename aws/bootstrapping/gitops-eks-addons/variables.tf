@@ -90,6 +90,18 @@ EOT
   default     = null
 }
 
+variable "custom_gitops_labels" {
+  description = <<EOT
+This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.
+
+custom_gitops_labels = {
+  enable_my_app = "true"
+}
+EOT
+  type        = any
+  default     = null
+}
+
 # external dns
 variable "external_dns_domain_filters" {
   description = "Limit possible target zones by domain suffixes."
