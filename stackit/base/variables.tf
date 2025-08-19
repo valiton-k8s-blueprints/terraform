@@ -13,8 +13,8 @@ variable "base_name" {
   default     = "my-project"
 
   validation {
-    condition     = length(split("", var.base_name)) <= 15
-    error_message = "The base name must be at most 15 characters (runes) long."
+    condition     = length(split("", var.base_name)) <= 11
+    error_message = "The base name must be at most 11 characters (runes) long."
   }
 }
 
