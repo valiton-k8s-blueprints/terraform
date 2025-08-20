@@ -25,14 +25,10 @@ spec:
       destination:
         namespace: argocd
         name: '{{.name}}'
-
-{{- if eq .metadata.annotations.autosync "true" }}
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-{{- else }}
-    syncPolicy: {}
-{{- end }}
-
-
+      syncPolicy: {{- if eq .metadata.annotations.autosync "true" }}
+        automated:
+          prune: true
+          selfHeal: true
+      {{- else }}
+        {}
+      {{- end }}
