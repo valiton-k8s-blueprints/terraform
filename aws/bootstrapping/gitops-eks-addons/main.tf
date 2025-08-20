@@ -50,7 +50,7 @@ locals {
     { kubernetes_version = local.cluster_version },
     { aws_cluster_name = local.cluster_name },
     { cloud_provider = "aws" },
-    var.custom_gitops_labels
+    var.metadata_labels,
   )
 
   addons_metadata = merge(
@@ -75,7 +75,7 @@ locals {
       kube_prometheus_stack_namespace = local.kube_prometheus_stack_namespace
     },
     { cloud_provider = "aws" },
-    var.custom_gitops_metadata
+    var.metadata_annotations,
   )
 
   argocd_apps = {

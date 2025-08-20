@@ -73,13 +73,24 @@ variable "gitops_argocd_chart_version" {
   type        = string
   default     = "8.0.17"
 }
-variable "custom_gitops_metadata" {
+variable "metadata_annotations" {
   description = <<EOT
 This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.
 
-custom_gitops_metadata = {
+metadata_annotations = {
   vault_data_db_connection = vault_kv_secret_v2.my_db.path
   vault_data_api_key       = vault_kv_secret_v2.api_key.path
+}
+EOT
+  type        = any
+  default     = null
+}
+
+variable "metadata_labels" {
+  description = <<EOT
+This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.
+metadata_labels = {
+  enable_my_app = "true"
 }
 EOT
   type        = any

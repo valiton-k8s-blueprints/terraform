@@ -77,11 +77,11 @@ variable "gitops_argocd_chart_version" {
   type        = string
   default     = "8.0.17"
 }
-variable "custom_gitops_metadata" {
+variable "metadata_annotations" {
   description = <<EOT
 This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.
 
-custom_gitops_metadata = {
+metadata_annotations = {
   ssm_parameter_db_conection = "/MYAPP/DB_CONNECTION_STRING" 
   ssm_parameter_api_key = "/MYAPP/API_KEY"
 }
@@ -90,11 +90,11 @@ EOT
   default     = null
 }
 
-variable "custom_gitops_labels" {
+variable "metadata_labels" {
   description = <<EOT
 This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.
 
-custom_gitops_labels = {
+metadata_labels = {
   enable_my_app = "true"
 }
 EOT

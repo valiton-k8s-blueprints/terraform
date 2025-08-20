@@ -55,6 +55,7 @@ locals {
   addons = merge(
     local.ske_addons,
     { kubernetes_version = local.ske_cluster_version },
+    var.custom_gitops_labels,
   )
 
   addons_metadata = merge(
