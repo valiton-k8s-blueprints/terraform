@@ -33,14 +33,14 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.17.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.36.0 |
-| <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | ~> 0.55.0 |
+| <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | ~> 0.57.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.36.0 |
-| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | ~> 0.55.0 |
+| <a name="provider_stackit"></a> [stackit](#provider\_stackit) | ~> 0.57.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 | <a name="provider_vault"></a> [vault](#provider\_vault) | n/a |
 
@@ -77,7 +77,6 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="input_cert_manager_stackit_service_account_email"></a> [cert\_manager\_stackit\_service\_account\_email](#input\_cert\_manager\_stackit\_service\_account\_email) | The e-mail address for the STACKIT service account used by the Cert Manager (e.g. DNS01 challenge in the STACKIT dns zone). Note: The service account must exist beforehand and in the case of DNS01 Challenge it should also already have permission for dns.admin or dns.reader. | `string` | `"example@sa.stackit.cloud"` | no |
 | <a name="input_cert_manager_stackit_webhook_service_account_secret"></a> [cert\_manager\_stackit\_webhook\_service\_account\_secret](#input\_cert\_manager\_stackit\_webhook\_service\_account\_secret) | The secret from the STACKIT service account, which includes the token to perform the DNS01 challenge in the configured STACKIT DNS zone. | `string` | `"certmanager/serviceaccount"` | no |
 | <a name="input_cert_manager_use_default_cert"></a> [cert\_manager\_use\_default\_cert](#input\_cert\_manager\_use\_default\_cert) | When it is set to true, cert manager we use a default cert. | `bool` | `true` | no |
-| <a name="input_custom_gitops_metadata"></a> [custom\_gitops\_metadata](#input\_custom\_gitops\_metadata) | This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.<br/><br/>custom\_gitops\_metadata = {<br/>  vault\_data\_db\_connection = vault\_kv\_secret\_v2.my\_db.path<br/>  vault\_data\_api\_key       = vault\_kv\_secret\_v2.api\_key.path<br/>} | `any` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Infrastructure environment name (e.g. development, staging, production). | `string` | `"development"` | no |
 | <a name="input_external_secrets"></a> [external\_secrets](#input\_external\_secrets) | ExternalSecrets add-on configuration values | `any` | `{}` | no |
 | <a name="input_external_secrets_stackit_secrets_manager_config"></a> [external\_secrets\_stackit\_secrets\_manager\_config](#input\_external\_secrets\_stackit\_secrets\_manager\_config) | Configuration parameters used by externalSecrets together with STACKIT secrets manager | `any` | `{}` | no |
@@ -86,6 +85,8 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="input_gitops_applications_repo_url"></a> [gitops\_applications\_repo\_url](#input\_gitops\_applications\_repo\_url) | Url of Git repository for applications | `string` | `"https://github.com/valiton-k8s-blueprints/argocd"` | no |
 | <a name="input_gitops_argocd_chart_version"></a> [gitops\_argocd\_chart\_version](#input\_gitops\_argocd\_chart\_version) | Initial ArgoCD helm chart version to be deployed via gitOps Bridge | `string` | `"8.0.17"` | no |
 | <a name="input_kube_prometheus_stack"></a> [kube\_prometheus\_stack](#input\_kube\_prometheus\_stack) | Kube prometheus stack add-on configuration values | `any` | `{}` | no |
+| <a name="input_metadata_annotations"></a> [metadata\_annotations](#input\_metadata\_annotations) | This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.<br/><br/>metadata\_annotations = {<br/>  vault\_data\_db\_connection = vault\_kv\_secret\_v2.my\_db.path<br/>  vault\_data\_api\_key       = vault\_kv\_secret\_v2.api\_key.path<br/>} | `any` | `null` | no |
+| <a name="input_metadata_labels"></a> [metadata\_labels](#input\_metadata\_labels) | This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.<br/>metadata\_labels = {<br/>  enable\_my\_app = "true"<br/>} | `any` | `null` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | STACKIT project ID to which the cluster is associated. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | STACKIT region | `string` | `"eu01"` | no |
 | <a name="input_ske_cluster_id"></a> [ske\_cluster\_id](#input\_ske\_cluster\_id) | Internal ID of the SKE cluster | `string` | n/a | yes |

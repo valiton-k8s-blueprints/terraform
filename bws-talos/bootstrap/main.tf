@@ -5,6 +5,25 @@ locals {
     service_account = try(var.cluster_secrets.service_account, "access-cluster-secrets")
   }
 
+  app_addons = {
+    enable_argocd                                   = try(var.addons.enable_argocd, true)
+    enable_ingress_nginx                            = try(var.addons.enable_ingress_nginx, false)
+    enable_cert_manager                             = try(var.addons.enable_cert_manager, false)
+    enable_external_secrets                         = try(var.addons.enable_external_secrets, false)
+    enable_kube_prometheus_stack                    = try(var.addons.enable_kube_prometheus_stack, false)
+    enable_metrics_server                           = try(var.addons.enable_metrics_server, false)
+    enable_external_dns                             = try(var.addons.enable_external_dns, false)
+    enable_metrics_server                           = try(var.addons.enable_metrics_server, false)
+    enable_openstack_cinder_csi                     = try(var.addons.enable_openstack_cinder_csi, false)
+    enable_openstack_cloud_controller_manager       = try(var.addons.enable_openstack_cloud_controller_manager, false)
+  }
+
+
+  addons = merge(
+    local.app_addons,
+    var.metadata_labels,
+  )
+
   metadata_annotations = merge(
     var.metadata_annotations,
     {
@@ -46,6 +65,7 @@ module "gitops_bridge_bootstrap" {
     cluster_name = var.base_name
     environment  = var.environment
     metadata     = local.metadata_annotations
+    addons       = local.addons
   }
 
   apps = local.argocd_apps

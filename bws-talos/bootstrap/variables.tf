@@ -27,10 +27,37 @@ variable "cluster_secrets" {
   default     = {}
 }
 
+variable "addons" {
+  description = "Kubernetes addons"
+  type        = any
+  default = {
+    enable_argocd                             = true
+    enable_ingress_nginx                      = true
+    enable_cert_manager                       = true
+    enable_external_secrets                   = true
+    enable_kube_prometheus_stack              = true
+    enable_external_dns                       = true
+    enable_metrics_server                     = true
+    enable_openstack_cinder_csi               = true
+    enable_openstack_cloud_controller_manager = true
+  }
+}
+
 variable "metadata_annotations" {
   description = "Values to be used in ApplicationSet definitions and stored as annotations of the cluster secret"
   type        = map(string)
   default     = {}
+}
+
+variable "metadata_labels" {
+  description = <<EOT
+This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.
+metadata_labels = {
+  enable_my_app = "true"
+}
+EOT
+  type        = any
+  default     = null
 }
 
 # Applications Git
