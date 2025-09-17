@@ -37,7 +37,7 @@ locals {
   cert_manager_default_cert_namespace                 = var.cert_manager_default_cert_namespace
 
 
-  custom_gitops_metadata = var.custom_gitops_metadata
+  metadata_annotations = var.metadata_annotations
 
 
   ske_addons = {
@@ -89,7 +89,7 @@ locals {
       cert_manager_default_cert_namespace                 = local.cert_manager_default_cert_namespace
     },
     { cloud_provider = "stackit" },
-    local.custom_gitops_metadata,
+    local.metadata_annotations,
   )
 
   argocd_apps = {
