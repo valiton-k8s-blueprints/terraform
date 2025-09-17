@@ -36,7 +36,7 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aws_auth"></a> [aws\_auth](#module\_aws\_auth) | terraform-aws-modules/eks/aws//modules/aws-auth | n/a |
+| <a name="module_aws_auth"></a> [aws\_auth](#module\_aws\_auth) | terraform-aws-modules/eks/aws//modules/aws-auth | 20.36.0 |
 | <a name="module_eks_blueprints_addons"></a> [eks\_blueprints\_addons](#module\_eks\_blueprints\_addons) | aws-ia/eks-blueprints-addons/aws | 1.21.0 |
 | <a name="module_gitops_bridge_bootstrap"></a> [gitops\_bridge\_bootstrap](#module\_gitops\_bridge\_bootstrap) | git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge | main |
 
@@ -51,7 +51,6 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_addons"></a> [addons](#input\_addons) | Kubernetes addons | `any` | <pre>{<br/>  "enable_aws_ebs_csi_resources": true,<br/>  "enable_aws_efs_csi_driver": true,<br/>  "enable_aws_load_balancer_controller": true,<br/>  "enable_cert_manager": false,<br/>  "enable_cert_manager_issuers": false,<br/>  "enable_external_dns": true,<br/>  "enable_external_secrets": true,<br/>  "enable_ingress_nginx": false,<br/>  "enable_karpenter": true,<br/>  "enable_kube_prometheus_stack": true,<br/>  "enable_metrics_server": true<br/>}</pre> | no |
-| <a name="input_custom_gitops_metadata"></a> [custom\_gitops\_metadata](#input\_custom\_gitops\_metadata) | This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.<br/><br/>custom\_gitops\_metadata = {<br/>  ssm\_parameter\_db\_connection = "/MYAPP/DB\_CONNECTION\_STRING" <br/>  ssm\_parameter\_api\_key = "/MYAPP/API\_KEY"<br/>} | `any` | `null` | no |
 | <a name="input_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#input\_eks\_cluster\_endpoint) | Base module dependency: Endpoint for your Kubernetes API server | `string` | n/a | yes |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Base module dependency: Name of the EKS cluster | `string` | n/a | yes |
 | <a name="input_eks_cluster_version"></a> [eks\_cluster\_version](#input\_eks\_cluster\_version) | Base module dependency: Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.32`) created from the base module | `string` | n/a | yes |
@@ -66,6 +65,8 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="input_gitops_applications_repo_url"></a> [gitops\_applications\_repo\_url](#input\_gitops\_applications\_repo\_url) | Url of Git repository for applications | `string` | `"https://github.com/valiton-k8s-blueprints/argocd"` | no |
 | <a name="input_gitops_argocd_chart_version"></a> [gitops\_argocd\_chart\_version](#input\_gitops\_argocd\_chart\_version) | Initial ArgoCD helm chart version to be deployed via gitOps Bridge | `string` | `"8.0.17"` | no |
 | <a name="input_kube_prometheus_stack"></a> [kube\_prometheus\_stack](#input\_kube\_prometheus\_stack) | Kube prometheus stack add-on configuration values | `any` | `{}` | no |
+| <a name="input_metadata_annotations"></a> [metadata\_annotations](#input\_metadata\_annotations) | This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.<br/><br/>metadata\_annotations = {<br/>  ssm\_parameter\_db\_conection = "/MYAPP/DB\_CONNECTION\_STRING" <br/>  ssm\_parameter\_api\_key = "/MYAPP/API\_KEY"<br/>} | `any` | `null` | no |
+| <a name="input_metadata_labels"></a> [metadata\_labels](#input\_metadata\_labels) | This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.<br/><br/>metadata\_labels = {<br/>  enable\_my\_app = "true"<br/>} | `any` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"eu-central-1"` | no |
 | <a name="input_route53_zone"></a> [route53\_zone](#input\_route53\_zone) | Limit possible route53 zones. | `string` | `"*"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | Base module dependency: ID of the VPC where the cluster security group will be provisioned | `string` | n/a | yes |
@@ -78,9 +79,6 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="output_configure_argocd"></a> [configure\_argocd](#output\_configure\_argocd) | Terminal Setup |
 | <a name="output_configure_kubectl"></a> [configure\_kubectl](#output\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 | <a name="output_eks_gitops_bridge_metadata"></a> [eks\_gitops\_bridge\_metadata](#output\_eks\_gitops\_bridge\_metadata) | GitOps Bridge metadata |
-| <a name="output_x_access_argocd"></a> [x\_access\_argocd](#output\_x\_access\_argocd) | ArgoCD Access |
-| <a name="output_x_configure_argocd"></a> [x\_configure\_argocd](#output\_x\_configure\_argocd) | Terminal Setup |
-| <a name="output_x_configure_kubectl"></a> [x\_configure\_kubectl](#output\_x\_configure\_kubectl) | Configure kubectl: make sure you're logged in with the correct AWS profile and run the following command to update your kubeconfig |
 
 ## Best Practices
 - Use **remote state storage** (e.g., S3 + DynamoDB) to manage state files.

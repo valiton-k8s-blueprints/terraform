@@ -5,6 +5,8 @@ locals {
     service_account = try(var.cluster_secrets.service_account, "access-cluster-secrets")
   }
 
+  addons = var.metadata_labels
+
   metadata_annotations = merge(
     var.metadata_annotations,
     {
@@ -46,6 +48,7 @@ module "gitops_bridge_bootstrap" {
     cluster_name = var.base_name
     environment  = var.environment
     metadata     = local.metadata_annotations
+    addons       = local.addons
   }
 
   apps = local.argocd_apps

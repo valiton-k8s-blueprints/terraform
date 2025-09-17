@@ -33,6 +33,17 @@ variable "metadata_annotations" {
   default     = {}
 }
 
+variable "metadata_labels" {
+  description = <<EOT
+This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.
+metadata_labels = {
+  enable_my_app = "true"
+}
+EOT
+  type        = any
+  default     = null
+}
+
 # Applications Git
 variable "gitops_applications_repo_url" {
   description = "Url of Git repository for applications"
