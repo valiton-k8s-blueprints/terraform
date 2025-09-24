@@ -139,15 +139,11 @@ resource "time_rotating" "rotate" {
   rotation_days = 80
 }
 
-resource "stackit_service_account_access_token" "cert_manager_sa_token" {
+
+resource "stackit_service_account_key" "cert_manager_sa_key" {
   count                 = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
   project_id            = local.project_id
   service_account_email = local.cert_manager_stackit_service_account_email
-  ttl_days              = 180
-
-  rotate_when_changed = {
-    rotation = time_rotating.rotate[count.index].id
-  }
 }
 
 
@@ -159,8 +155,8 @@ resource "vault_kv_secret_v2" "cert_manager_webhook_secret" {
   delete_all_versions = true
   data_json = jsonencode(
     {
-      token_id = stackit_service_account_access_token.cert_manager_sa_token[count.index].access_token_id,
-      token    = stackit_service_account_access_token.cert_manager_sa_token[count.index].token,
+      key_id     = stackit_service_account_key.cert_manager_sa_key[count.index].key_id,
+      key_json   = stackit_service_account_key.cert_manager_sa_key[count.index].json,
     }
   )
 }
