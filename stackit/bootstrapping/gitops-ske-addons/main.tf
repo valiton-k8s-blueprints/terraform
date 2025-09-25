@@ -133,12 +133,6 @@ resource "kubernetes_secret" "vault_userpass_creds" {
 # Cert Manager - Webhook Secret with STACKIT service acoount for DNS01 challenge
 # https://docs.stackit.cloud/stackit/en/how-to-use-stackit-dns-for-dns01-to-act-as-a-dns01-acme-issuer-with-cert-manager-152633984.html
 ################################################################################
-resource "time_rotating" "rotate" {
-  count = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
-
-  rotation_days = 80
-}
-
 
 resource "stackit_service_account_key" "cert_manager_sa_key" {
   count                 = (local.ske_addons.enable_cert_manager && local.ske_addons.enable_external_secrets) ? 1 : 0
