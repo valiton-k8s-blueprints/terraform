@@ -47,7 +47,7 @@ module "gitops_bridge_bootstrap" {
     addons       = local.addons
   }
 
-  apps = var.custom_argocd_apps ? var.custom_argocd_apps : {
+  apps = var.custom_argocd_apps != null ? var.custom_argocd_apps : {
     applications = file("${path.module}/argocd/applications.yaml")
   }
 
