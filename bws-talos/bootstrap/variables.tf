@@ -64,3 +64,10 @@ variable "destroy_timeout" {
   description = "Time to wait after uninstalling applications in seconds"
   type        = number
 }
+
+variable "custom_argocd_applications" {
+  description = "YAML manifest of custom ArgoCD applications to deploy"
+  type        = string
+  default     = null
+
+}

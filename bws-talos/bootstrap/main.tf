@@ -21,7 +21,7 @@ locals {
   )
 
   argocd_apps = {
-    applications = file("${path.module}/argocd/applications.yaml")
+    applications = var.custom_argocd_applications != null ? var.custom_argocd_applications : file("${path.module}/argocd/applications.yaml")
   }
 }
 
