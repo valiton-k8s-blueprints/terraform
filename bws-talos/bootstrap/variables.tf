@@ -65,9 +65,8 @@ variable "destroy_timeout" {
   type        = number
 }
 
-variable "custom_argocd_applications" {
-  description = "YAML manifest of custom ArgoCD applications to deploy"
-  type        = string
+variable "custom_argocd_apps" {
+  description = "list of custom YAML manifests of custom ArgoCD applications to deploy"
+  type        = any
   default     = null
-
 }
