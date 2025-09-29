@@ -49,7 +49,7 @@ module "gitops_bridge_bootstrap" {
 
   apps = var.custom_argocd_apps != null ? var.custom_argocd_apps : {
     applications = templatefile("${path.module}/argocd/applications.yaml", {
-      cluster_selector = json_encode(var.argocd_applications_selector)
+      cluster_selector = jsonencode(var.argocd_applications_selector)
     })
   }
 
