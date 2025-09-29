@@ -70,3 +70,9 @@ variable "custom_argocd_apps" {
   type        = any
   default     = null
 }
+
+variable "argocd_applications_selector" {
+  description = "Label selector for ArgoCD applications"
+  type        = map(string)
+  default     = {}
+}
