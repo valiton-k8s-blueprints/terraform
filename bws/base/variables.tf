@@ -1,3 +1,12 @@
+variable "k8s_distribution" {
+  description = "Kubernetes distribution, one of 'talos', 'k0s'"
+  type        = string
+  validation {
+    condition     = contains(["talos", "k0s"], var.k8s_distribution)
+    error_message = "Valid values for k8s_distribution are talos and k0s."
+  }
+}
+
 variable "base_name" {
   description = "Name of your base infrastructure."
   type        = string
@@ -47,6 +56,7 @@ variable "os_user_name" {
 variable "talos_secrets" {
   description = "Object of secrets generated with talosctl gen secrets"
   type        = any
+  default     = {}
 }
 
 variable "worker_instance_flavor" {
@@ -80,7 +90,7 @@ variable "controlplane_volume_size" {
 }
 
 variable "image_name" {
-  description = "Name of the Talos image in your project"
+  description = "Name of the instance image in your project"
   type        = string
 }
 
