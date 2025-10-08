@@ -1,6 +1,6 @@
 output "talosconfig" {
   description = "Talosconfig of the new cluster"
-  value       = data.talos_client_configuration.talos.talos_config
+  value       = module.bootstrap_talos[0].talosconfig
   sensitive   = true
 }
 
@@ -11,12 +11,12 @@ output "controlplane_nodes" {
 
 output "worker_machine_configuration" {
   description = "Machine Configuration for worker nodes"
-  value       = module.talos-config.worker_machine_configuration
+  value       = module.talos-config[0].worker_machine_configuration
 }
 
 output "controlplane_machine_configuration" {
   description = "Machine Configuration for controlplan nodes"
-  value       = module.talos-config.controlplane_machine_configuration
+  value       = module.talos-config[0].controlplane_machine_configuration
 }
 
 output "os_public_network_id" {

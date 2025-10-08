@@ -7,12 +7,6 @@ resource "random_integer" "ip_part" {
 
 locals {
   private_network_cidr = var.os_private_network_cidr != "" ? var.os_private_network_cidr : "10.${random_integer.ip_part.result}.0.0/16"
-
-  client_configuration = {
-    ca_certificate     = var.talos_secrets.certs.os.crt
-    client_certificate = base64encode(module.talos-config.talos_client_crt)
-    client_key         = base64encode(module.talos-config.talos_client_key)
-  }
 }
 
 ################################################################################
@@ -36,6 +30,8 @@ module "network" {
 ################################################################################
 module "talos-config" {
   source = "./modules/talos_config"
+
+  count = var.k8s_distribution == "talos" ? 1 : 0
 
   cluster_name                     = var.base_name
   talos_secrets                    = var.talos_secrets
@@ -64,75 +60,37 @@ module "instances" {
   worker_volume_type           = var.worker_volume_type
   worker_volume_size           = var.worker_volume_size
   worker_port_id               = module.network.worker_port_id
-  worker_user_data             = module.talos-config.worker_machine_configuration
+  worker_user_data             = var.k8s_distribution == "talos" ? module.talos-config[0].worker_machine_configuration : ""
   controlplane_instance_flavor = var.controlplane_instance_flavor
   controlplane_volume_type     = var.controlplane_volume_type
   controlplane_volume_size     = var.controlplane_volume_size
   controlplane_port_id         = module.network.controlplane_port_id
-  controlplane_user_data       = module.talos-config.controlplane_machine_configuration
+  controlplane_user_data       = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : ""
 }
 
-############################
-# Apply Talos configuration
-############################
-resource "talos_machine_configuration_apply" "controlplane" {
-  count = var.controlplane_count
+module "bootstrap_talos" {
+  source = "./modules/talos"
+
+  count = var.k8s_distribution == "talos" ? 1 : 0
 
   depends_on = [
     module.network,
     module.instances
   ]
-
-  client_configuration = local.client_configuration
-  endpoint             = var.kube_api_external_ip
-  node                 = module.network.controlplane_fixed_ips[count.index]
-
-  machine_configuration_input = module.talos-config.controlplane_machine_configuration
-}
-
-resource "talos_machine_configuration_apply" "worker" {
-  count = var.worker_count
-
-  depends_on = [talos_machine_configuration_apply.controlplane]
-
-  client_configuration = local.client_configuration
-  endpoint             = var.kube_api_external_ip
-  node                 = module.network.worker_fixed_ips[count.index]
-
-  machine_configuration_input = module.talos-config.worker_machine_configuration
-}
-
-########################
-# Boostrap cluster
-########################
-resource "talos_machine_bootstrap" "cluster" {
-  depends_on = [
-    module.network,
-    module.instances,
-    talos_machine_configuration_apply.controlplane,
-    talos_machine_configuration_apply.worker
-  ]
-
-  client_configuration = local.client_configuration
-
-  node     = module.network.controlplane_fixed_ips[0]
-  endpoint = var.kube_api_external_ip
-}
-
-data "talos_cluster_health" "talos" {
-  depends_on = [talos_machine_bootstrap.cluster]
-
-  client_configuration = local.client_configuration
-
-  control_plane_nodes = module.network.controlplane_fixed_ips
-  worker_nodes        = module.network.worker_fixed_ips
-  endpoints           = [var.kube_api_external_ip]
-}
-
-data "talos_client_configuration" "talos" {
-  cluster_name         = var.base_name
-  client_configuration = local.client_configuration
-  endpoints            = [var.kube_api_external_ip]
+  base_name                          = var.base_name
+  client_configuration               = {
+    ca_certificate     = var.talos_secrets.certs.os.crt
+    client_certificate = base64encode(module.talos-config[0].talos_client_crt)
+    client_key         = base64encode(module.talos-config[0].talos_client_key)
+  }
+  controlplane_count                 = var.controlplane_count
+  controlplane_machine_configuration = module.talos-config[0].controlplane_machine_configuration
+  controlplane_names                 = module.network.controlplane_fixed_ips
+  k8s_distribution                   = var.k8s_distribution
+  kube_api_external_ip               = var.kube_api_external_ip
+  worker_count                       = var.worker_count
+  worker_machine_configuration       = module.talos-config[0].worker_machine_configuration
+  worker_names                       = module.network.worker_fixed_ips
 }
 
 locals {
@@ -140,7 +98,7 @@ locals {
 }
 
 resource "helm_release" "openstack_cloud_controller_manager" {
-  depends_on = [data.talos_cluster_health.talos]
+  depends_on = [module.bootstrap_talos.talos_cluster_health]
 
   name       = "openstack-cloud-controller-manager"
   chart      = "openstack-cloud-controller-manager"
