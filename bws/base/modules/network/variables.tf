@@ -45,3 +45,7 @@ variable "enable_talos_api" {
 variable "enable_ssh_bastion" {
   type = bool
 }
+
+variable "enable_k0s_api" {
+  type = bool
+}

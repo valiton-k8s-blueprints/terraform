@@ -60,6 +60,18 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_talos_api_rule_ipv4" {
   remote_ip_prefix  = var.os_private_network_cidr
 }
 
+resource "openstack_networking_secgroup_rule_v2" "ingress_k0s_api_rule_ipv4" {
+  count = var.enable_k0s_api ? 1 : 0
+
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 9443
+  port_range_max    = 9443
+  security_group_id = openstack_networking_secgroup_v2.external.id
+  remote_ip_prefix  = var.os_private_network_cidr
+}
+
 resource "openstack_networking_secgroup_rule_v2" "ingress_ssh_ipv4" {
   count = var.enable_ssh_bastion ? 1 : 0
 
@@ -187,6 +199,44 @@ resource "openstack_lb_member_v2" "talos_api" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.talos_api[0].id
   protocol_port = 50000
+  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+}
+
+resource "openstack_lb_listener_v2" "k0s_api" {
+  count = var.enable_k0s_api ? 1 : 0
+
+  name            = "${var.name_prefix}-k0s-api"
+  loadbalancer_id = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.id
+  protocol        = "TCP"
+  protocol_port   = 9443
+}
+
+resource "openstack_lb_pool_v2" "k0s_api" {
+  count = var.enable_k0s_api ? 1 : 0
+
+  name        = "${var.name_prefix}-k0s-api"
+  lb_method   = "ROUND_ROBIN"
+  listener_id = openstack_lb_listener_v2.k0s_api[count.index].id
+  protocol    = "TCP"
+}
+
+resource "openstack_lb_monitor_v2" "k0s_api" {
+  count = var.enable_k0s_api ? 1 : 0
+
+  pool_id     = openstack_lb_pool_v2.k0s_api[count.index].id
+  delay       = 5
+  max_retries = 4
+  timeout     = 10
+  type        = "TCP"
+}
+
+resource "openstack_lb_member_v2" "k0s_api" {
+  count = var.enable_k0s_api ? var.controlplane_count : 0
+
+  name          = "${var.name_prefix}-k0s-api-${count.index}"
+  address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.k0s_api[0].id
+  protocol_port = 9443
   subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
 }
 
