@@ -89,6 +89,24 @@ variable "controlplane_volume_size" {
   type        = number
 }
 
+variable "bastion_instance_flavor" {
+  description = "Instance flavor for bastion node"
+  type        = string
+  default     = null
+}
+
+variable "bastion_volume_type" {
+  description = "Volume type for bastion node"
+  type        = string
+  default     = null
+}
+
+variable "bastion_volume_size" {
+  description = "Size in GB of the disk of the bastion node"
+  type        = number
+  default     = null
+}
+
 variable "image_name" {
   description = "Name of the instance image in your project"
   type        = string
@@ -127,4 +145,10 @@ variable "controlplane_count" {
 variable "pod_security_exemptions_namespaces" {
   description = "List of namespaces for pod security exemption"
   type        = list(string)
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key to access machines, should be added to ssh-agent"
+  type        = string
+  default     = null
 }

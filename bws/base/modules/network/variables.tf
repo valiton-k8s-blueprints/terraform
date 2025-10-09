@@ -37,3 +37,11 @@ variable "controlplane_count" {
   description = "Number of controlplane nodes"
   type        = number
 }
+
+variable "enable_talos_api" {
+  type = bool
+}
+
+variable "enable_ssh_bastion" {
+  type = bool
+}
