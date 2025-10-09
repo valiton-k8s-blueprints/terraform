@@ -31,6 +31,7 @@ module "network" {
   kube_api_external_ip    = var.kube_api_external_ip
   kube_api_external_port  = var.kube_api_external_port
   enable_talos_api        = var.k8s_distribution == "talos"
+  enable_k0s_api          = var.k8s_distribution == "k0s"
   enable_ssh_bastion      = var.k8s_distribution == "k0s"
 }
 
