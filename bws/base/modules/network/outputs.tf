@@ -1,3 +1,8 @@
+output "bastion_port_id" {
+  description = "IDs of networking ports for bastion node"
+  value       = [for port in openstack_networking_port_v2.bastion_port : port.id]
+}
+
 output "worker_port_id" {
   description = "IDs of networking ports for worker nodes"
   value       = [for port in openstack_networking_port_v2.worker_port : port.id]

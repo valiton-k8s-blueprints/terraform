@@ -66,3 +66,8 @@ variable "controlplane_user_data" {
   description = "User data for controlpane"
   type        = string
 }
+
+variable "keypair_name" {
+  description = "Name of existing SSH key pair"
+  type        = string
+}

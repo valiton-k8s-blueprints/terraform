@@ -1,6 +1,6 @@
 output "talosconfig" {
   description = "Talosconfig of the new cluster"
-  value       = module.bootstrap_talos[0].talosconfig
+  value       = var.k8s_distribution == "talos" ? module.bootstrap_talos[0].talosconfig : ""
   sensitive   = true
 }
 
@@ -11,12 +11,12 @@ output "controlplane_nodes" {
 
 output "worker_machine_configuration" {
   description = "Machine Configuration for worker nodes"
-  value       = module.talos-config[0].worker_machine_configuration
+  value       = var.k8s_distribution == "talos" ? module.talos-config[0].worker_machine_configuration : ""
 }
 
 output "controlplane_machine_configuration" {
   description = "Machine Configuration for controlplan nodes"
-  value       = module.talos-config[0].controlplane_machine_configuration
+  value       = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : ""
 }
 
 output "os_public_network_id" {
@@ -29,14 +29,6 @@ output "os_private_network_subnet_id" {
   value       = module.network.private_network_subnet_id
 }
 
-output "talos_cluster_health" {
+output "cluster_health" {
   value = helm_release.openstack_cloud_controller_manager.status
-}
-
-output "x_download_kubeconfig" {
-  description = "Terminal Setup"
-  value       = <<-EOT
-    terraform output -raw talosconfig > talosconfig
-    talosctl --talosconfig ./talosconfig --nodes ${module.network.controlplane_fixed_ips[0]} kubeconfig
-    EOT
 }

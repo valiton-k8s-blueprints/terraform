@@ -5,6 +5,13 @@ resource "random_integer" "ip_part" {
   max = 243
 }
 
+resource "openstack_compute_keypair_v2" "keypair" {
+  count = var.k8s_distribution == "k0s" ? 1 : 0
+
+  name       = "${var.base_name}-keypair"
+  public_key = var.ssh_public_key
+}
+
 locals {
   private_network_cidr = var.os_private_network_cidr != "" ? var.os_private_network_cidr : "10.${random_integer.ip_part.result}.0.0/16"
 }
@@ -23,6 +30,8 @@ module "network" {
   controlplane_count      = var.controlplane_count
   kube_api_external_ip    = var.kube_api_external_ip
   kube_api_external_port  = var.kube_api_external_port
+  enable_talos_api        = var.k8s_distribution == "talos"
+  enable_ssh_bastion      = var.k8s_distribution == "k0s"
 }
 
 ################################################################################
@@ -60,12 +69,27 @@ module "instances" {
   worker_volume_type           = var.worker_volume_type
   worker_volume_size           = var.worker_volume_size
   worker_port_id               = module.network.worker_port_id
-  worker_user_data             = var.k8s_distribution == "talos" ? module.talos-config[0].worker_machine_configuration : ""
+  worker_user_data             = var.k8s_distribution == "talos" ? module.talos-config[0].worker_machine_configuration : null
   controlplane_instance_flavor = var.controlplane_instance_flavor
   controlplane_volume_type     = var.controlplane_volume_type
   controlplane_volume_size     = var.controlplane_volume_size
   controlplane_port_id         = module.network.controlplane_port_id
-  controlplane_user_data       = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : ""
+  controlplane_user_data       = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : null
+  keypair_name                 = var.k8s_distribution == "talos" ? null : openstack_compute_keypair_v2.keypair[0].name
+}
+
+module "bastion" {
+  source = "./modules/bastion"
+
+  count = var.k8s_distribution == "k0s" ? 1 : 0
+
+  name_prefix     = var.base_name
+  image_name      = var.image_name
+  instance_flavor = var.bastion_instance_flavor
+  volume_type     = var.bastion_volume_type
+  volume_size     = var.bastion_volume_size
+  port_id         = module.network.bastion_port_id[0]
+  keypair_name    = var.k8s_distribution == "talos" ? null : openstack_compute_keypair_v2.keypair[0].name
 }
 
 module "bootstrap_talos" {
@@ -77,8 +101,8 @@ module "bootstrap_talos" {
     module.network,
     module.instances
   ]
-  base_name                          = var.base_name
-  client_configuration               = {
+  base_name = var.base_name
+  client_configuration = {
     ca_certificate     = var.talos_secrets.certs.os.crt
     client_certificate = base64encode(module.talos-config[0].talos_client_crt)
     client_key         = base64encode(module.talos-config[0].talos_client_key)

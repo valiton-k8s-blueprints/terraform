@@ -16,6 +16,7 @@ resource "openstack_compute_instance_v2" "worker" {
   name      = "${var.name_prefix}-worker-${count.index}"
   flavor_id = data.openstack_compute_flavor_v2.worker_flavor.id
   user_data = var.worker_user_data
+  key_pair  = var.keypair_name
 
   block_device {
     uuid                  = data.openstack_images_image_v2.talos.id
@@ -42,6 +43,7 @@ resource "openstack_compute_instance_v2" "controlplane" {
   name      = "${var.name_prefix}-controlplane-${count.index}"
   flavor_id = data.openstack_compute_flavor_v2.controlplane_flavor.id
   user_data = var.controlplane_user_data
+  key_pair  = var.keypair_name
 
   block_device {
     uuid                  = data.openstack_images_image_v2.talos.id
