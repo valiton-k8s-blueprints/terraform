@@ -56,3 +56,8 @@ variable "worker_names" {
   description = "Names of the worker nodes"
   type        = list(string)
 }
+
+variable "openstack_helm_chart_version" {
+  description = "Version of the openstack helm chart"
+  type        = string
+}

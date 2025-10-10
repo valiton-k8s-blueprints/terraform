@@ -30,5 +30,5 @@ output "os_private_network_subnet_id" {
 }
 
 output "cluster_health" {
-  value = helm_release.openstack_cloud_controller_manager.status
+  value = var.k8s_distribution == "talos" ? module.bootstrap_talos[0].cluster_health : null
 }

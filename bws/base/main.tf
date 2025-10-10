@@ -13,7 +13,8 @@ resource "openstack_compute_keypair_v2" "keypair" {
 }
 
 locals {
-  private_network_cidr = var.os_private_network_cidr != "" ? var.os_private_network_cidr : "10.${random_integer.ip_part.result}.0.0/16"
+  private_network_cidr         = var.os_private_network_cidr != "" ? var.os_private_network_cidr : "10.${random_integer.ip_part.result}.0.0/16"
+  openstack_helm_chart_version = replace(var.openstack_ccm_version, "v1", "2")
 }
 
 ################################################################################
@@ -102,12 +103,15 @@ module "bootstrap_talos" {
     module.network,
     module.instances
   ]
+
   base_name = var.base_name
+
   client_configuration = {
     ca_certificate     = var.talos_secrets.certs.os.crt
     client_certificate = base64encode(module.talos-config[0].talos_client_crt)
     client_key         = base64encode(module.talos-config[0].talos_client_key)
   }
+
   controlplane_count                 = var.controlplane_count
   controlplane_machine_configuration = module.talos-config[0].controlplane_machine_configuration
   controlplane_names                 = module.network.controlplane_fixed_ips
@@ -116,30 +120,5 @@ module "bootstrap_talos" {
   worker_count                       = var.worker_count
   worker_machine_configuration       = module.talos-config[0].worker_machine_configuration
   worker_names                       = module.network.worker_fixed_ips
-}
-
-locals {
-  openstack_helm_chart_version = replace(var.openstack_ccm_version, "v1", "2")
-}
-
-resource "helm_release" "openstack_cloud_controller_manager" {
-  depends_on = [module.bootstrap_talos.talos_cluster_health]
-
-  name       = "openstack-cloud-controller-manager"
-  chart      = "openstack-cloud-controller-manager"
-  version    = local.openstack_helm_chart_version
-  repository = "https://kubernetes.github.io/cloud-provider-openstack"
-  namespace  = "kube-system"
-
-  values = [yamlencode({
-    secret = {
-      enabled = true
-      create  = false
-    }
-    cluster = {
-      name = var.base_name
-    }
-  })]
-
-  wait = true
+  openstack_helm_chart_version       = local.openstack_helm_chart_version
 }
