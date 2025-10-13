@@ -91,10 +91,6 @@ locals {
     { cloud_provider = "stackit" },
     local.metadata_annotations,
   )
-
-  argocd_apps = {
-    applications = file("${path.module}/argocd/applications.yaml")
-  }
 }
 
 
@@ -181,5 +177,9 @@ module "gitops_bridge_bootstrap" {
   }
 
 
-  apps = local.argocd_apps
+  apps = var.custom_argocd_apps != null ? var.custom_argocd_apps : {
+    applications = templatefile("${path.module}/argocd/applications.yaml", {
+      cluster_selector = jsonencode(var.argocd_applications_selector)
+    })
+  }
 }

@@ -51,6 +51,8 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_addons"></a> [addons](#input\_addons) | Kubernetes addons | `any` | <pre>{<br/>  "enable_aws_ebs_csi_resources": true,<br/>  "enable_aws_efs_csi_driver": true,<br/>  "enable_aws_load_balancer_controller": true,<br/>  "enable_cert_manager": false,<br/>  "enable_cert_manager_issuers": false,<br/>  "enable_external_dns": true,<br/>  "enable_external_secrets": true,<br/>  "enable_ingress_nginx": false,<br/>  "enable_karpenter": true,<br/>  "enable_kube_prometheus_stack": true,<br/>  "enable_metrics_server": true<br/>}</pre> | no |
+| <a name="input_argocd_applications_selector"></a> [argocd\_applications\_selector](#input\_argocd\_applications\_selector) | Label selector for ArgoCD applications | `map(any)` | `{}` | no |
+| <a name="input_custom_argocd_apps"></a> [custom\_argocd\_apps](#input\_custom\_argocd\_apps) | list of custom YAML manifests of custom ArgoCD applications to deploy | `any` | `null` | no |
 | <a name="input_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#input\_eks\_cluster\_endpoint) | Base module dependency: Endpoint for your Kubernetes API server | `string` | n/a | yes |
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Base module dependency: Name of the EKS cluster | `string` | n/a | yes |
 | <a name="input_eks_cluster_version"></a> [eks\_cluster\_version](#input\_eks\_cluster\_version) | Base module dependency: Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.32`) created from the base module | `string` | n/a | yes |

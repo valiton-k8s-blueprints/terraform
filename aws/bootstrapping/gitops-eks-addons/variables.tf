@@ -77,6 +77,7 @@ variable "gitops_argocd_chart_version" {
   type        = string
   default     = "8.0.17"
 }
+
 variable "metadata_annotations" {
   description = <<EOT
 This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.
@@ -100,6 +101,18 @@ metadata_labels = {
 EOT
   type        = any
   default     = null
+}
+
+variable "custom_argocd_apps" {
+  description = "list of custom YAML manifests of custom ArgoCD applications to deploy"
+  type        = any
+  default     = null
+}
+
+variable "argocd_applications_selector" {
+  description = "Label selector for ArgoCD applications"
+  type        = map(any)
+  default     = {}
 }
 
 # external dns
