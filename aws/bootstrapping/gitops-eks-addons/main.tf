@@ -134,6 +134,7 @@ module "eks_blueprints_addons" {
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   }
 
+  tags = local.tags
 }
 
 module "aws_auth" {

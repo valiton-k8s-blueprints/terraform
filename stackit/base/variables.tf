@@ -1,8 +1,3 @@
-variable "environment" {
-  default     = "development"
-  type        = string
-  description = "Infrastructure environment name (e.g. development, staging, production)."
-}
 variable "project_id" {
   type        = string
   description = "STACKIT project ID to which the cluster is associated."
