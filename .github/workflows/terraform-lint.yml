@@ -1,0 +1,47 @@
+name: Terraform Lint and Validate
+
+on:
+  push:
+    paths:
+      - "**.tf"
+      - "**.hcl"
+      - ".github/workflows/terraform-lint.yml"
+
+
+jobs:
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module:
+          - aws/base
+          - aws/bootstrapping/gitops-eks-addons
+          - stackit/base
+          - stackit/bootstrapping/gitops-ske-addons
+          - bws-talos/base
+          - bws-talos/bootstrap
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: v0.60.0
+          cache: true
+
+      - name: Show TFLint version
+        run: tflint --version
+
+      - name: Init TFLint
+        run: tflint --init
+        working-directory: ${{ matrix.module }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run TFLint
+        run: tflint --config ../../.tflint.hcl --format compact
+        working-directory: ${{ matrix.module }}
+
