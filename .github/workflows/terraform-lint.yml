@@ -1,31 +1,24 @@
 name: Terraform Lint and Validate
 
-on:
-  push:
-    paths:
-      - "**.tf"
-      - "**.hcl"
-      - ".github/workflows/terraform-lint.yml"
-
 env:
   tflint_version: "v0.60.0"
   tf_version: "latest"
   tf_working_dir: "."
 
-# on:
-#   pull_request:
-#     branches: [main]
-#     paths:
-#       - "**.tf"
-#       - "**.hcl"
-#       - ".github/workflows/terraform-lint.yml"
-#   push:
-#     branches: [main]
-#     paths:
-#       - "**.tf"
-#       - "**.hcl"
-#       - ".github/workflows/terraform-lint.yml"
-#   workflow_dispatch:
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**.tf"
+      - "**.hcl"
+      - ".github/workflows/terraform-lint.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**.tf"
+      - "**.hcl"
+      - ".github/workflows/terraform-lint.yml"
+  workflow_dispatch:
 
 jobs:
   tflint:
