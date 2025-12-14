@@ -13,14 +13,14 @@ plugin "aws" {
   source  = "github.com/terraform-linters/tflint-ruleset-aws"
 }
 
+################################################################################
+# Additional rules on top of the tflint 'recommended' preset
+################################################################################
+
 rule "terraform_naming_convention" {
   enabled = true
   format  = "snake_case"
 }
-
-################################################################################
-# Rules
-################################################################################
 
 rule "terraform_standard_module_structure" {
   enabled = true
