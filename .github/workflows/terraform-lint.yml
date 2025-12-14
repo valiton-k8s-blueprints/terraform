@@ -23,7 +23,7 @@ jobs:
     #       - bws-talos/bootstrap
 
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup TFLint
@@ -42,4 +42,20 @@ jobs:
 
       - name: Run TFLint
         run: tflint --recursive --format compact
+
+  terraform-fmt:
+    name: Terraform Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.1
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive -diff
 
