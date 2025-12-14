@@ -4,3 +4,6 @@ terragrunt*
 terraform.tfvars
 serviceaccount.sh
 vault.sh
+.terraform
+*.tfstate
+*.tfstate.*
