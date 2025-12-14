@@ -12,15 +12,15 @@ jobs:
   tflint:
     name: TFLint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        module:
-          - aws/base
-          - aws/bootstrapping/gitops-eks-addons
-          - stackit/base
-          - stackit/bootstrapping/gitops-ske-addons
-          - bws-talos/base
-          - bws-talos/bootstrap
+    # strategy:
+    #   matrix:
+    #     module:
+    #       - aws/base
+    #       - aws/bootstrapping/gitops-eks-addons
+    #       - stackit/base
+    #       - stackit/bootstrapping/gitops-ske-addons
+    #       - bws-talos/base
+    #       - bws-talos/bootstrap
 
     steps:
       - name: Checkout source code
@@ -37,11 +37,9 @@ jobs:
 
       - name: Init TFLint
         run: tflint --init
-        working-directory: ${{ matrix.module }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run TFLint
-        run: tflint --config ../../.tflint.hcl --format compact
-        working-directory: ${{ matrix.module }}
+        run: tflint --recursive --format compact
 
