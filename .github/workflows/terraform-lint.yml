@@ -7,20 +7,30 @@ on:
       - "**.hcl"
       - ".github/workflows/terraform-lint.yml"
 
+env:
+  tflint_version: "v0.60.0"
+  tf_version: "latest"
+  tf_working_dir: "."
+
+# on:
+#   pull_request:
+#     branches: [main]
+#     paths:
+#       - "**.tf"
+#       - "**.hcl"
+#       - ".github/workflows/terraform-lint.yml"
+#   push:
+#     branches: [main]
+#     paths:
+#       - "**.tf"
+#       - "**.hcl"
+#       - ".github/workflows/terraform-lint.yml"
+#   workflow_dispatch:
 
 jobs:
   tflint:
     name: TFLint
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     module:
-    #       - aws/base
-    #       - aws/bootstrapping/gitops-eks-addons
-    #       - stackit/base
-    #       - stackit/bootstrapping/gitops-ske-addons
-    #       - bws-talos/base
-    #       - bws-talos/bootstrap
 
     steps:
       - name: Checkout code
@@ -29,7 +39,7 @@ jobs:
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v6
         with:
-          tflint_version: v0.60.0
+          tflint_version: ${{ env.tflint_version }}
           cache: true
 
       - name: Show TFLint version
@@ -51,11 +61,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: "Terraform Format"
+        uses: hashicorp/terraform-github-actions@master
         with:
-          terraform_version: 1.14.1
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: "fmt"
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive -diff
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Terraform Init"
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: "init"
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Terraform Validate"
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.tf_version }}
+          tf_actions_subcommand: "validate"
+          tf_actions_working_dir: ${{ env.tf_working_dir }}
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
