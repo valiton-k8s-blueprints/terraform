@@ -99,7 +99,7 @@ locals {
 
 
 ################################################################################
-# STACKIT Secrets Manager +  ExternalSecrets 
+# STACKIT Secrets Manager +  ExternalSecrets
 ################################################################################
 resource "kubernetes_namespace_v1" "external_secrets" {
   count = (local.ske_addons.enable_external_secrets && local.ske_addons.enable_external_secrets_stackit_secrets_manager) ? 1 : 0
@@ -177,7 +177,7 @@ module "gitops_bridge_bootstrap" {
   }
 
   argocd = {
-    chart_version = "8.1.1"
+    chart_version = local.gitops_argocd_chart_version
   }
 
 
