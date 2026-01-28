@@ -6,8 +6,7 @@ resource "random_integer" "ip_part" {
 }
 
 locals {
-  name   = var.base_name
-  region = var.region
+  name = var.base_name
 
   cluster_version = var.kubernetes_version
 
@@ -46,8 +45,10 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
-  cluster_enabled_log_types   = var.cluster_enabled_log_types
-  create_cloudwatch_log_group = var.create_cloudwatch_log_group
+  cluster_enabled_log_types              = var.cluster_enabled_log_types
+  create_cloudwatch_log_group            = var.create_cloudwatch_log_group
+  cloudwatch_log_group_retention_in_days = var.cloudwatch_log_group_retention_in_days
+  cloudwatch_log_group_class             = var.cloudwatch_log_group_class
 
 
   vpc_id     = module.vpc.vpc_id
