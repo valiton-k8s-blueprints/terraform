@@ -44,6 +44,12 @@ EOT
   default     = null
 }
 
+variable "gitops_argocd_chart_version" {
+  description = "Initial ArgoCD helm chart version to be deployed via gitOps Bridge"
+  type        = string
+  default     = "8.0.17"
+}
+
 # Applications Git
 variable "gitops_applications_repo_url" {
   description = "Url of Git repository for applications"

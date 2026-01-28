@@ -54,7 +54,7 @@ module "gitops_bridge_bootstrap" {
   apps = local.argocd_apps
 
   argocd = {
-    chart_version = "8.0.9"
+    chart_version = var.gitops_argocd_chart_version
     values = [
       yamlencode({
         configs = {

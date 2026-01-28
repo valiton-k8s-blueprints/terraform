@@ -71,8 +71,9 @@ variable "gitops_applications_repo_revision" {
 variable "gitops_argocd_chart_version" {
   description = "Initial ArgoCD helm chart version to be deployed via gitOps Bridge"
   type        = string
-  default     = "8.0.17"
+  default     = "8.1.1"
 }
+
 variable "metadata_annotations" {
   description = <<EOT
 This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.
