@@ -78,10 +78,6 @@ locals {
     var.metadata_annotations,
   )
 
-  argocd_apps = {
-    applications = file("${path.module}/argocd/applications.yaml")
-  }
-
   tags = {
     Blueprint  = local.cluster_name
     GithubRepo = "github.com/valiton/k8s-terraform-blueprints"
@@ -101,7 +97,11 @@ module "gitops_bridge_bootstrap" {
     addons       = local.addons
   }
 
-  apps = local.argocd_apps
+  apps = var.custom_argocd_apps != null ? var.custom_argocd_apps : {
+    applications = templatefile("${path.module}/argocd/applications.yaml", {
+      cluster_selector = jsonencode(var.argocd_applications_selector)
+    })
+  }
 
   argocd = {
     chart_version = local.gitops_argocd_chart_version

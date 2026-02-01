@@ -19,10 +19,6 @@ locals {
       cluster_secret_service_account = local.cluster_secrets.service_account
     }
   )
-
-  argocd_apps = {
-    applications = file("${path.module}/argocd/applications.yaml")
-  }
 }
 
 module "cluster_secrets" {
@@ -51,7 +47,11 @@ module "gitops_bridge_bootstrap" {
     addons       = local.addons
   }
 
-  apps = local.argocd_apps
+  apps = var.custom_argocd_apps != null ? var.custom_argocd_apps : {
+    applications = templatefile("${path.module}/argocd/applications.yaml", {
+      cluster_selector = jsonencode(var.argocd_applications_selector)
+    })
+  }
 
   argocd = {
     chart_version = var.gitops_argocd_chart_version

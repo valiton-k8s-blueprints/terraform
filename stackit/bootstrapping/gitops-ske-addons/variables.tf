@@ -98,6 +98,18 @@ EOT
   default     = null
 }
 
+variable "custom_argocd_apps" {
+  description = "list of custom YAML manifests of custom ArgoCD applications to deploy"
+  type        = any
+  default     = null
+}
+
+variable "argocd_applications_selector" {
+  description = "Label selector for ArgoCD applications"
+  type        = map(any)
+  default     = {}
+}
+
 # kube-prometheus-stack
 variable "kube_prometheus_stack" {
   description = "Kube prometheus stack add-on configuration values"

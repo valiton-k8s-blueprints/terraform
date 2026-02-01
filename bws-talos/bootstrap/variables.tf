@@ -70,3 +70,15 @@ variable "destroy_timeout" {
   description = "Time to wait after uninstalling applications in seconds"
   type        = number
 }
+
+variable "custom_argocd_apps" {
+  description = "list of custom YAML manifests of custom ArgoCD applications to deploy"
+  type        = any
+  default     = null
+}
+
+variable "argocd_applications_selector" {
+  description = "Label selector for ArgoCD applications"
+  type        = map(any)
+  default     = {}
+}

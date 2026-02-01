@@ -8,7 +8,7 @@ spec:
   syncPolicy:
     preserveResourcesOnDeletion: false
   generators:
-    - clusters: {}
+    - clusters: ${cluster_selector}
   template:
     metadata:
       name: 'applications'
