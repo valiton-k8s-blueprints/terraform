@@ -54,6 +54,9 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = merge(var.eks_managed_node_groups, local.base_node_group)
+  iam_role_additional_policies = {
+    ssm_core = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 
   # EKS Addons
   cluster_addons = {
