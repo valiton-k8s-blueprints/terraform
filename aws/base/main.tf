@@ -24,8 +24,21 @@ locals {
       desired_size   = var.base_node_group_desired_size
       labels         = var.base_node_group_labels
 
+      # Install SSM Agent
+      pre_bootstrap_user_data = <<-EOF
+        #!/bin/bash
+        set -euxo pipefail
+
+        # SSM Agent auf Amazon Linux 2023 installieren
+        dnf install -y amazon-ssm-agent
+
+        # Agent beim Boot aktivieren und sofort starten
+        systemctl enable --now amazon-ssm-agent
+      EOF
+
+      # Node IAM-Rolle um SSM-Policy erweitern
       iam_role_additional_policies = {
-        AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ssm = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
       }
     }
   }
