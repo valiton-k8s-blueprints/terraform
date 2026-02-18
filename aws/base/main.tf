@@ -25,7 +25,8 @@ locals {
       labels         = var.base_node_group_labels
 
       # Install SSM Agent
-      pre_bootstrap_user_data = <<-EOF
+      enable_bootstrap_user_data = true
+      post_bootstrap_user_data   = <<-EOF
         #!/bin/bash
         set -euxo pipefail
 
