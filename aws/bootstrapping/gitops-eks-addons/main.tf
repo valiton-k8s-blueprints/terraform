@@ -42,6 +42,7 @@ locals {
     enable_kube_prometheus_stack = try(var.addons.enable_kube_prometheus_stack, false)
     enable_metrics_server        = try(var.addons.enable_metrics_server, false)
     #enable_prometheus_adapter              = try(var.addons.enable_prometheus_adapter, false)
+    enable_logging               = try(var.addons.enable_logging, true)
   }
 
   addons = merge(
