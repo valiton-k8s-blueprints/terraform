@@ -23,6 +23,10 @@ locals {
       max_size       = var.base_node_group_max_size
       desired_size   = var.base_node_group_desired_size
       labels         = var.base_node_group_labels
+
+      iam_role_additional_policies = {
+        AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      }
     }
   }
 
@@ -54,9 +58,6 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = merge(var.eks_managed_node_groups, local.base_node_group)
-  node_iam_role_additional_policies = {
-    ssm_core = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
 
   # EKS Addons
   cluster_addons = {
