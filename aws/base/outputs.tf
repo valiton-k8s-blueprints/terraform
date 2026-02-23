@@ -1,3 +1,8 @@
+output "vpc_default_vpc_security_group_id" {
+  description = "The ID of the security group created by default on VPC creation"
+  value       = module.vpc.default_security_group_id
+}
+
 output "vpc_public_subnets_cidr_blocks" {
   description = "List of cidr_blocks of public subnets"
   value       = module.vpc.public_subnets_cidr_blocks
