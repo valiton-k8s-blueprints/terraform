@@ -59,6 +59,11 @@ output "oidc_provider_arn" {
   value       = module.eks.oidc_provider_arn
 }
 
+output "oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading https://)."
+  value       = module.eks.oidc_provider
+}
+
 output "eks_managed_node_groups" {
   description = "List of managed nodegroups in the cluster"
   value       = module.eks.eks_managed_node_groups
