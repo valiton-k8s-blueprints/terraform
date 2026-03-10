@@ -47,6 +47,7 @@ variable "addons" {
     enable_external_dns                 = true
     enable_karpenter                    = true
     enable_kube_prometheus_stack        = true
+    enable_logging                      = true
     enable_cert_manager                 = false
     enable_cert_manager_issuers         = false
     enable_ingress_nginx                = false
