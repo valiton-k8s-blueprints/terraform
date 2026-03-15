@@ -54,6 +54,11 @@ output "eks_cluster_version" {
   value       = module.eks.cluster_version
 }
 
+output "cluster_primary_security_group_id" {
+  description = "Cluster security group that was created by Amazon EKS for the cluster."
+  value       = module.eks.cluster_primary_security_group_id"
+}
+
 output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster."
   value       = module.eks.cluster_certificate_authority_data
