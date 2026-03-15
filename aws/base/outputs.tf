@@ -56,7 +56,7 @@ output "eks_cluster_version" {
 
 output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster."
-  value       = module.eks.cluster_primary_security_group_id"
+  value       = module.eks.cluster_primary_security_group_id
 }
 
 output "cluster_certificate_authority_data" {
