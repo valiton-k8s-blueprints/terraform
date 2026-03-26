@@ -93,7 +93,7 @@ locals {
 # GitOps Bridge: Bootstrap
 ################################################################################
 module "gitops_bridge_bootstrap" {
-  source = "git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge?ref=main"
+  source = "git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge?ref=a27e101"
 
   cluster = {
     cluster_name = local.cluster_name
@@ -135,6 +135,7 @@ module "eks_blueprints_addons" {
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   }
 
+  tags = local.tags
 }
 
 module "aws_auth" {

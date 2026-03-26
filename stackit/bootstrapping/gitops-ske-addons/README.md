@@ -34,6 +34,7 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.17.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.36.0 |
 | <a name="requirement_stackit"></a> [stackit](#requirement\_stackit) | ~> 0.57.0 |
+| <a name="requirement_vault"></a> [vault](#requirement\_vault) | 5.6.0 |
 
 ## Providers
 
@@ -42,13 +43,13 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.36.0 |
 | <a name="provider_stackit"></a> [stackit](#provider\_stackit) | ~> 0.57.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
-| <a name="provider_vault"></a> [vault](#provider\_vault) | n/a |
+| <a name="provider_vault"></a> [vault](#provider\_vault) | 5.6.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gitops_bridge_bootstrap"></a> [gitops\_bridge\_bootstrap](#module\_gitops\_bridge\_bootstrap) | git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge | main |
+| <a name="module_gitops_bridge_bootstrap"></a> [gitops\_bridge\_bootstrap](#module\_gitops\_bridge\_bootstrap) | git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge | a27e101 |
 
 ## Resources
 
@@ -76,23 +77,19 @@ See the example implementation: [example folder](https://github.com/valiton-k8s-
 | <a name="input_cert_manager_http01_issuer_name"></a> [cert\_manager\_http01\_issuer\_name](#input\_cert\_manager\_http01\_issuer\_name) | The name of the issuer that ArgoCD should use to create the http01 challenge issuer. | `string` | `"letsencrypt-http01"` | no |
 | <a name="input_cert_manager_stackit_service_account_email"></a> [cert\_manager\_stackit\_service\_account\_email](#input\_cert\_manager\_stackit\_service\_account\_email) | The e-mail address for the STACKIT service account used by the Cert Manager (e.g. DNS01 challenge in the STACKIT dns zone). Note: The service account must exist beforehand and in the case of DNS01 Challenge it should also already have permission for dns.admin or dns.reader. | `string` | `"example@sa.stackit.cloud"` | no |
 | <a name="input_cert_manager_stackit_webhook_service_account_secret"></a> [cert\_manager\_stackit\_webhook\_service\_account\_secret](#input\_cert\_manager\_stackit\_webhook\_service\_account\_secret) | The secret from the STACKIT service account, which includes the token to perform the DNS01 challenge in the configured STACKIT DNS zone. | `string` | `"certmanager/serviceaccount"` | no |
-| <a name="input_cert_manager_use_default_cert"></a> [cert\_manager\_use\_default\_cert](#input\_cert\_manager\_use\_default\_cert) | When it is set to true, cert manager we use a default cert. | `bool` | `true` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Infrastructure environment name (e.g. development, staging, production). | `string` | `"development"` | no |
 | <a name="input_external_secrets"></a> [external\_secrets](#input\_external\_secrets) | ExternalSecrets add-on configuration values | `any` | `{}` | no |
 | <a name="input_external_secrets_stackit_secrets_manager_config"></a> [external\_secrets\_stackit\_secrets\_manager\_config](#input\_external\_secrets\_stackit\_secrets\_manager\_config) | Configuration parameters used by externalSecrets together with STACKIT secrets manager | `any` | `{}` | no |
 | <a name="input_gitops_applications_repo_path"></a> [gitops\_applications\_repo\_path](#input\_gitops\_applications\_repo\_path) | Path in the Git repository for applications and values.yaml | `string` | `"stackit"` | no |
 | <a name="input_gitops_applications_repo_revision"></a> [gitops\_applications\_repo\_revision](#input\_gitops\_applications\_repo\_revision) | Git repository revision/branch/ref for applications | `string` | `"main"` | no |
 | <a name="input_gitops_applications_repo_url"></a> [gitops\_applications\_repo\_url](#input\_gitops\_applications\_repo\_url) | Url of Git repository for applications | `string` | `"https://github.com/valiton-k8s-blueprints/argocd"` | no |
-| <a name="input_gitops_argocd_chart_version"></a> [gitops\_argocd\_chart\_version](#input\_gitops\_argocd\_chart\_version) | Initial ArgoCD helm chart version to be deployed via gitOps Bridge | `string` | `"8.0.17"` | no |
+| <a name="input_gitops_argocd_chart_version"></a> [gitops\_argocd\_chart\_version](#input\_gitops\_argocd\_chart\_version) | Initial ArgoCD helm chart version to be deployed via gitOps Bridge | `string` | `"8.1.1"` | no |
 | <a name="input_kube_prometheus_stack"></a> [kube\_prometheus\_stack](#input\_kube\_prometheus\_stack) | Kube prometheus stack add-on configuration values | `any` | `{}` | no |
 | <a name="input_metadata_annotations"></a> [metadata\_annotations](#input\_metadata\_annotations) | This variable can be used to place additional meta information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.annotation. E.g.<br/><br/>metadata\_annotations = {<br/>  vault\_data\_db\_connection = vault\_kv\_secret\_v2.my\_db.path<br/>  vault\_data\_api\_key       = vault\_kv\_secret\_v2.api\_key.path<br/>} | `any` | `null` | no |
 | <a name="input_metadata_labels"></a> [metadata\_labels](#input\_metadata\_labels) | This variable can be used to place additional label information in the ArgoCD in-cluster secret. This information is then also available in the ApplicationSets via metadata.labels. E.g.<br/>metadata\_labels = {<br/>  enable\_my\_app = "true"<br/>} | `any` | `null` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | STACKIT project ID to which the cluster is associated. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | STACKIT region | `string` | `"eu01"` | no |
-| <a name="input_ske_cluster_id"></a> [ske\_cluster\_id](#input\_ske\_cluster\_id) | Internal ID of the SKE cluster | `string` | n/a | yes |
 | <a name="input_ske_cluster_name"></a> [ske\_cluster\_name](#input\_ske\_cluster\_name) | Name of the SKE cluster | `string` | n/a | yes |
 | <a name="input_ske_cluster_version"></a> [ske\_cluster\_version](#input\_ske\_cluster\_version) | Kubernetes version to use for the SKE cluster | `string` | n/a | yes |
-| <a name="input_ske_egress_adress_range"></a> [ske\_egress\_adress\_range](#input\_ske\_egress\_adress\_range) | Egress IP range of the clusters | `string` | n/a | yes |
 | <a name="input_ske_nodepools"></a> [ske\_nodepools](#input\_ske\_nodepools) | Map of attribute maps for all SKE managed node pools. | `any` | n/a | yes |
 
 ## Outputs

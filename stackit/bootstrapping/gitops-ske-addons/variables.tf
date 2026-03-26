@@ -17,16 +17,8 @@ variable "ske_cluster_name" {
   description = "Name of the SKE cluster"
   type        = string
 }
-variable "ske_cluster_id" {
-  description = "Internal ID of the SKE cluster"
-  type        = string
-}
 variable "ske_cluster_version" {
   description = "Kubernetes version to use for the SKE cluster"
-  type        = string
-}
-variable "ske_egress_adress_range" {
-  description = "Egress IP range of the clusters"
   type        = string
 }
 variable "ske_nodepools" {
@@ -134,12 +126,6 @@ variable "cert_manager_http01_issuer_name" {
   description = "The name of the issuer that ArgoCD should use to create the http01 challenge issuer."
   type        = string
   default     = "letsencrypt-http01"
-}
-
-variable "cert_manager_use_default_cert" {
-  description = "When it is set to true, cert manager we use a default cert."
-  type        = bool
-  default     = true
 }
 
 variable "cert_manager_default_cert_solver_type" {

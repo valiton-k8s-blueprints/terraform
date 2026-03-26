@@ -6,11 +6,9 @@ locals {
 
   project_id = var.project_id
 
-  ske_cluster_name        = var.ske_cluster_name
-  ske_cluster_id          = var.ske_cluster_id
-  ske_egress_adress_range = var.ske_egress_adress_range
-  ske_cluster_version     = var.ske_cluster_version
-  ske_nodepools           = var.ske_nodepools
+  ske_cluster_name    = var.ske_cluster_name
+  ske_cluster_version = var.ske_cluster_version
+  ske_nodepools       = var.ske_nodepools
 
   gitops_applications_repo_url      = var.gitops_applications_repo_url
   gitops_applications_repo_path     = var.gitops_applications_repo_path
@@ -26,7 +24,9 @@ locals {
   stackit_sm_secret_namespace = try(var.external_secrets_stackit_secrets_manager_config.sm_secret_namespace, "external-secrets")
   stackit_sm_instance_id      = try(var.external_secrets_stackit_secrets_manager_config.sm_instance_id, "undefined")
 
+
   cert_manager_acme_registration_email                = var.cert_manager_acme_registration_email
+  cert_manager_acme_stackit_project_id                = var.cert_manager_acme_stackit_project_id
   cert_manager_stackit_webhook_service_account_secret = var.cert_manager_stackit_webhook_service_account_secret
   cert_manager_stackit_service_account_email          = var.cert_manager_stackit_service_account_email
   cert_manager_dns01_issuer_name                      = var.cert_manager_dns01_issuer_name
@@ -81,8 +81,9 @@ locals {
     {
       cert_manager_stackit_webhook_service_account_secret = local.cert_manager_stackit_webhook_service_account_secret
       cert_manager_acme_registration_email                = local.cert_manager_acme_registration_email
-      cert_manager_dns01_issuer_name                      = var.cert_manager_dns01_issuer_name
-      cert_manager_http01_issuer_name                     = var.cert_manager_http01_issuer_name
+      cert_manager_acme_stackit_project_id                = local.cert_manager_acme_stackit_project_id
+      cert_manager_dns01_issuer_name                      = local.cert_manager_dns01_issuer_name
+      cert_manager_http01_issuer_name                     = local.cert_manager_http01_issuer_name
       cert_manager_default_cert_domain_list               = jsonencode(local.cert_manager_default_cert_domain_list)
       cert_manager_default_cert_solver_type               = local.cert_manager_default_cert_solver_type
       cert_manager_default_cert_name                      = local.cert_manager_default_cert_name
@@ -149,8 +150,8 @@ resource "vault_kv_secret_v2" "cert_manager_webhook_secret" {
   delete_all_versions = true
   data_json = jsonencode(
     {
-      key_id     = stackit_service_account_key.cert_manager_sa_key[count.index].key_id,
-      key_json   = stackit_service_account_key.cert_manager_sa_key[count.index].json,
+      key_id   = stackit_service_account_key.cert_manager_sa_key[count.index].key_id,
+      key_json = stackit_service_account_key.cert_manager_sa_key[count.index].json,
     }
   )
 }
@@ -167,7 +168,7 @@ resource "kubernetes_namespace_v1" "cert_manager_default_certificate" {
 # GitOps Bridge: Bootstrap
 ################################################################################
 module "gitops_bridge_bootstrap" {
-  source = "git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge?ref=main"
+  source = "git::https://github.com/valiton-k8s-blueprints/terraform-helm-gitops-bridge?ref=a27e101"
 
   cluster = {
     cluster_name = local.ske_cluster_name
@@ -179,7 +180,6 @@ module "gitops_bridge_bootstrap" {
   argocd = {
     chart_version = local.gitops_argocd_chart_version
   }
-
 
   apps = local.argocd_apps
 }

@@ -1,8 +1,3 @@
-variable "environment" {
-  default     = "development"
-  type        = string
-  description = "Infrastructure environment name (e.g. development, staging, production)."
-}
 variable "base_name" {
   description = "Name of your base infrastructure."
   type        = string
@@ -27,11 +22,6 @@ variable "single_nat_gateway" {
   description = "True if only a single NAT gateway should be deployed instead of one per AZ"
   type        = bool
   default     = false
-}
-variable "region" {
-  description = "AWS region"
-  type        = string
-  default     = "eu-central-1"
 }
 
 variable "base_node_group_instance_types" {
@@ -83,6 +73,7 @@ variable "eks_managed_node_groups" {
   type        = any
   default     = {}
 }
+
 variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string

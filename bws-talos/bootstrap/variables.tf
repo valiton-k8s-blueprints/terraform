@@ -15,10 +15,12 @@ variable "environment" {
 
 variable "os_application_credential_id" {
   description = "Openstack application credentials ID"
+  type        = string
 }
 
 variable "os_application_credential_secret" {
   description = "Openstack application credentials secret"
+  type        = string
 }
 
 variable "cluster_secrets" {

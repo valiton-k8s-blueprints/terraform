@@ -35,6 +35,7 @@ variable "os_application_credential_id" {
 
 variable "os_application_credential_secret" {
   description = "Openstack application credentials secret"
+  type        = string
   default     = ""
 }
 
