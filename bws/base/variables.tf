@@ -1,9 +1,9 @@
 variable "k8s_distribution" {
-  description = "Kubernetes distribution, one of 'talos', 'k0s'"
+  description = "Kubernetes distribution, one of 'talos', 'k0s', 'kubeone'"
   type        = string
   validation {
-    condition     = contains(["talos", "k0s"], var.k8s_distribution)
-    error_message = "Valid values for k8s_distribution are talos and k0s."
+    condition     = contains(["talos", "k0s", "kubeone"], var.k8s_distribution)
+    error_message = "Valid values for k8s_distribution are talos, k0s and kubeone."
   }
 }
 
@@ -45,6 +45,17 @@ variable "os_application_credential_id" {
 
 variable "os_application_credential_secret" {
   description = "Openstack application credentials secret"
+  type        = string
+}
+
+variable "os_region_name" {
+  description = "Openstack region name"
+  type        = string
+  default     = ""
+}
+
+variable "os_token" {
+  description = "Openstack authentication token"
   type        = string
 }
 
@@ -130,6 +141,7 @@ variable "kubernetes_version" {
 variable "openstack_ccm_version" {
   description = "Openstack cloud controller mananger version"
   type        = string
+  default     = ""
 }
 
 variable "worker_count" {
@@ -152,3 +164,51 @@ variable "ssh_public_key" {
   type        = string
   default     = null
 }
+
+variable "cluster_domain" {
+  description = "Domain for the cluster internal DNS, usually cluster.local"
+  default     = "cluster.local"
+  type        = string
+}
+
+variable "cinder_csi_plugin_volume_type" {
+  description = "Cinder csi plugin add-on configuration values"
+  type        = string
+  default     = ""
+}
+
+variable "availability_zone" {
+  description = "Name of the availability zone"
+  type        = string
+  default     = ""
+}
+
+variable "min_dynamic_workers" {
+  description = "Minimum number of dynamic workers"
+  type        = number
+  default     = 0
+}
+
+variable "max_dynamic_workers" {
+  description = "Maximum number of dynamic workers"
+  type        = number
+  default     = 1
+}
+
+variable "ca_crt" {
+  description = "CA certificate for the cluster"
+  type        = string
+  default     = ""
+}
+
+variable "ca_key" {
+  description = "CA key for the cluster"
+  type        = string
+  default     = ""
+}
+
+variable "keystone_auth_port" {
+  description = "Port of keystone auth"
+  type        = number
+}
+

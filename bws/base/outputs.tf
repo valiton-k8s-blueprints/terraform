@@ -29,6 +29,16 @@ output "os_private_network_subnet_id" {
   value       = module.network.private_network_subnet_id
 }
 
+output "os_private_network_name" {
+  description = "Name of the private network"
+  value       = module.network.private_network_name
+}
+
+output "os_private_network_subnet_name" {
+  description = "Name of the created private network subnet"
+  value       = module.network.private_network_subnet_name
+}
+
 output "cluster_health" {
   value = var.k8s_distribution == "talos" ? module.bootstrap_talos[0].cluster_health : null
 }

@@ -22,6 +22,7 @@ variable "worker_instance_flavor" {
   description = "Instance flavor for workers"
   type        = string
 }
+
 variable "worker_volume_type" {
   description = "Volume type for workers"
   type        = string

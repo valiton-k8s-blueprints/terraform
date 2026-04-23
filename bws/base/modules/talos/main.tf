@@ -35,14 +35,12 @@ resource "talos_machine_bootstrap" "cluster" {
   endpoint = var.kube_api_external_ip
 }
 
-data "talos_cluster_health" "talos" {
+resource "null_resource" "wait_for_k8s_keystone" {
   depends_on = [talos_machine_bootstrap.cluster]
 
-  client_configuration = var.client_configuration
-
-  control_plane_nodes = var.controlplane_names
-  worker_nodes        = var.worker_names
-  endpoints           = [var.kube_api_external_ip]
+  provisioner "local-exec" {
+    command = "curl --fail --retry 30  --retry-all-errors --retry-delay 10 -k https://${var.kube_api_external_ip}:${var.kube_api_external_port}/api/v1/namespaces/kube-system/status --header 'Authorization: Bearer ${var.os_token}'"
+  }
 }
 
 data "talos_client_configuration" "talos" {
@@ -52,7 +50,7 @@ data "talos_client_configuration" "talos" {
 }
 
 resource "helm_release" "openstack_cloud_controller_manager" {
-  depends_on = [data.talos_cluster_health.talos]
+  depends_on = [null_resource.wait_for_k8s_keystone]
 
   name       = "openstack-cloud-controller-manager"
   chart      = "openstack-cloud-controller-manager"

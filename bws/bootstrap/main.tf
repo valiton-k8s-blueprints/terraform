@@ -30,6 +30,7 @@ module "cluster_secrets" {
 
   os_application_credential_id     = var.os_application_credential_id
   os_application_credential_secret = var.os_application_credential_secret
+  dynamic_worker_cloud_init        = var.dynamic_worker_cloud_init
 
   namespace       = local.cluster_secrets.namespace
   secret_name     = local.cluster_secrets.secret_name

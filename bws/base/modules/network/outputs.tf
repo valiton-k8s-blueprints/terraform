@@ -18,9 +18,24 @@ output "private_network_subnet_id" {
   value       = openstack_networking_subnet_v2.private_network_subnet.id
 }
 
+output "private_network_subnet_name" {
+  description = "Name of the created private subnet"
+  value       = openstack_networking_subnet_v2.private_network_subnet.name
+}
+
+output "private_network_name" {
+  description = "Name of the created private network"
+  value       = openstack_networking_network_v2.private_network.name
+}
+
 output "public_network_id" {
   description = "ID of the public network"
   value       = data.openstack_networking_network_v2.public_network.id
+}
+
+output "security_groups" {
+  description = "Created security groups"
+  value       = [openstack_networking_secgroup_v2.external, openstack_networking_secgroup_v2.private_network_allow_internal]
 }
 
 output "controlplane_fixed_ips" {

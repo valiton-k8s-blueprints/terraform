@@ -3,3 +3,10 @@ machine:
   install:
     extraKernelArgs:
       - 'talos.platform=openstack'
+  features:
+    hostDNS:
+      enabled: true
+      resolveMemberNames: true
+cluster:
+  network:
+    dnsDomain: ${cluster_domain} #

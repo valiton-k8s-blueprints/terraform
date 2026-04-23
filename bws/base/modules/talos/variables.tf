@@ -47,6 +47,21 @@ variable "kube_api_external_ip" {
   type        = string
 }
 
+variable "kube_api_external_port" {
+  description = "Port of Keystone Auth"
+  type        = number
+}
+
+variable "os_token" {
+  description = "Openstack authentication token"
+  type        = string
+}
+
+variable "talos_secrets" {
+  description = "Object of secrets generated with talosctl gen secrets"
+  type        = any
+}
+
 variable "controlplane_names" {
   description = "Names of the controlplane nodes"
   type        = list(string)

@@ -22,3 +22,9 @@ variable "os_application_credential_secret" {
   description = "Openstack application credentials secret"
   type        = string
 }
+
+variable "dynamic_worker_cloud_init" {
+  description = "Cloud init for dynamic workers"
+  type        = string
+  default     = ""
+}

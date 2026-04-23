@@ -6,7 +6,7 @@ resource "random_integer" "ip_part" {
 }
 
 resource "openstack_compute_keypair_v2" "keypair" {
-  count = var.k8s_distribution == "k0s" ? 1 : 0
+  count = var.k8s_distribution == "talos" ? 0 : 1
 
   name       = "${var.base_name}-keypair"
   public_key = var.ssh_public_key
@@ -31,9 +31,28 @@ module "network" {
   controlplane_count      = var.controlplane_count
   kube_api_external_ip    = var.kube_api_external_ip
   kube_api_external_port  = var.kube_api_external_port
+  keystone_auth_port      = var.keystone_auth_port
   enable_talos_api        = var.k8s_distribution == "talos"
   enable_k0s_api          = var.k8s_distribution == "k0s"
-  enable_ssh_bastion      = var.k8s_distribution == "k0s"
+  enable_ssh_bastion      = var.k8s_distribution != "talos"
+  enable_keystone_auth    = var.k8s_distribution != "kubeone"
+}
+
+################################################################################
+# K8S Distribution independent config
+################################################################################
+module "config" {
+  source = "./modules/config"
+
+  os_ccm_version                   = var.openstack_ccm_version
+  os_auth_url                      = var.os_auth_url
+  os_user_name                     = var.os_user_name
+  os_application_credential_id     = var.os_application_credential_id
+  os_application_credential_secret = var.os_application_credential_secret
+  os_floating_network_id           = module.network.public_network_id
+  os_subnet_id                     = module.network.private_network_subnet_id
+  kube_api_external_ip             = var.kube_api_external_ip
+  keystone_auth_port               = var.keystone_auth_port
 }
 
 ################################################################################
@@ -44,20 +63,36 @@ module "talos-config" {
 
   count = var.k8s_distribution == "talos" ? 1 : 0
 
-  cluster_name                     = var.base_name
-  talos_secrets                    = var.talos_secrets
-  kube_api_external_ip             = var.kube_api_external_ip
-  kube_api_external_port           = var.kube_api_external_port
-  kubernetes_version               = var.kubernetes_version
-  os_ccm_version                   = var.openstack_ccm_version
-  os_auth_url                      = var.os_auth_url
-  os_application_credential_id     = var.os_application_credential_id
-  os_application_credential_secret = var.os_application_credential_secret
-  os_user_name                     = var.os_user_name
-  public_network_id                = module.network.public_network_id
-  private_network_subnet_id        = module.network.private_network_subnet_id
+  cluster_name           = var.base_name
+  talos_secrets          = var.talos_secrets
+  kube_api_external_ip   = var.kube_api_external_ip
+  kube_api_external_port = var.kube_api_external_port
+  kubernetes_version     = var.kubernetes_version
 
   pod_security_exemptions_namespaces = var.pod_security_exemptions_namespaces
+
+  k8s_keystone_auth_config    = module.config.k8s_keystone_auth_config
+  k8s_keystone_auth_manifests = module.config.k8s_keystone_auth_manifests
+  k8s_keystone_ca             = module.config.k8s_keystone_ca
+  openstack_ccm_secret        = module.config.openstack_ccm_secret
+  cluster_domain              = var.cluster_domain
+}
+
+module "kubeone-config" {
+  source = "./modules/kubeone_config"
+
+  count = var.k8s_distribution == "kubeone" ? 1 : 0
+
+  ca_crt = var.ca_crt
+  ca_key = var.ca_key
+}
+
+locals {
+  controlplane_user_data = {
+    talos   = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : null
+    kubeone = var.k8s_distribution == "kubeone" ? module.kubeone-config[0].controlplane_userdata : null
+    k0s     = null
+  }
 }
 
 module "instances" {
@@ -76,14 +111,14 @@ module "instances" {
   controlplane_volume_type     = var.controlplane_volume_type
   controlplane_volume_size     = var.controlplane_volume_size
   controlplane_port_id         = module.network.controlplane_port_id
-  controlplane_user_data       = var.k8s_distribution == "talos" ? module.talos-config[0].controlplane_machine_configuration : null
+  controlplane_user_data       = local.controlplane_user_data[var.k8s_distribution]
   keypair_name                 = var.k8s_distribution == "talos" ? null : openstack_compute_keypair_v2.keypair[0].name
 }
 
 module "bastion" {
   source = "./modules/bastion"
 
-  count = var.k8s_distribution == "k0s" ? 1 : 0
+  count = var.k8s_distribution == "talos" ? 0 : 1
 
   name_prefix     = var.base_name
   image_name      = var.image_name
@@ -112,13 +147,53 @@ module "bootstrap_talos" {
     client_key         = base64encode(module.talos-config[0].talos_client_key)
   }
 
+  talos_secrets = var.talos_secrets
+
   controlplane_count                 = var.controlplane_count
   controlplane_machine_configuration = module.talos-config[0].controlplane_machine_configuration
   controlplane_names                 = module.network.controlplane_fixed_ips
   k8s_distribution                   = var.k8s_distribution
   kube_api_external_ip               = var.kube_api_external_ip
+  kube_api_external_port             = var.kube_api_external_port
   worker_count                       = var.worker_count
   worker_machine_configuration       = module.talos-config[0].worker_machine_configuration
   worker_names                       = module.network.worker_fixed_ips
   openstack_helm_chart_version       = local.openstack_helm_chart_version
+
+  os_token = var.os_token
+}
+
+module "bootstrap_kubeone" {
+  source = "./modules/kubeone"
+
+  depends_on = [
+    module.bastion,
+    module.network,
+    module.instances
+  ]
+
+  count = var.k8s_distribution == "kubeone" ? 1 : 0
+
+  availability_zone                = var.availability_zone
+  cluster_name                     = var.base_name
+  controlplane_instances           = module.instances.controlplane_instances
+  image_name                       = var.image_name
+  kube_api_external_ip             = var.kube_api_external_ip
+  kube_api_external_port           = var.kube_api_external_port
+  kubernetes_version               = var.kubernetes_version
+  max_dynamic_workers              = var.max_dynamic_workers
+  min_dynamic_workers              = var.min_dynamic_workers
+  cinder_csi_plugin_volume_type    = var.cinder_csi_plugin_volume_type
+  os_application_credential_id     = var.os_application_credential_id
+  os_application_credential_secret = var.os_application_credential_secret
+  os_auth_url                      = var.os_auth_url
+  os_region_name                   = var.os_region_name
+  private_network_name             = module.network.private_network_name
+  private_network_subnet_id        = module.network.private_network_subnet_id
+  private_network_subnet_name      = module.network.private_network_subnet_name
+  public_network_id                = module.network.public_network_id
+  security_groups                  = module.network.security_groups
+  worker_instance_flavor           = var.worker_instance_flavor
+  worker_instances                 = module.instances.worker_instances
+  worker_volume_size               = var.worker_volume_size
 }

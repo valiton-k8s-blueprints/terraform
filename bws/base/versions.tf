@@ -4,7 +4,7 @@ terraform {
   required_providers {
     openstack = {
       source  = "terraform-provider-openstack/openstack"
-      version = ">=3.0.0"
+      version = ">= 3.0.0"
     }
     talos = {
       source  = "siderolabs/talos"
@@ -12,15 +12,23 @@ terraform {
     }
     tls = {
       source  = "hashicorp/tls"
-      version = ">=4.0.6"
+      version = ">= 4.0.6"
     }
     random = {
       source  = "hashicorp/random"
-      version = ">=3.7.2"
+      version = ">= 3.7.2"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.10.1"
+      version = ">= 2.10.1, < 3.0.0"
+    }
+    ct = {
+      source  = "poseidon/ct"
+      version = ">= 0.14.0"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.5.0"
     }
   }
 }

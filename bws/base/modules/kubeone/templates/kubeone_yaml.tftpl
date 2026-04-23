@@ -1,0 +1,80 @@
+apiVersion: kubeone.k8c.io/v1beta2
+kind: KubeOneCluster
+name: ${cluster_name}
+apiEndpoint:
+  host: ${kube_api_external_ip}
+  port: ${kube_api_external_port}
+cloudProvider:
+  cloudConfig: |
+    [Global]
+    auth-url=${os_auth_url}
+    application-credential-id=${os_application_credential_id}
+    application-credential-secret=${os_application_credential_secret}
+    [LoadBalancer]
+    subnet-id=${private_network_subnet_id}
+    floating-network-id=${public_network_id}
+    manage-security-groups=true
+    cascade-delete=false
+  external: true
+  openstack: {}
+clusterNetwork:
+  cni:
+    canal: {}
+containerRuntime:
+  containerd: {}
+controlPlane:
+  hosts:
+    %{~ for cp in controlplane_instances ~}
+    - bastion: ${kube_api_external_ip}
+      bastionPort: ${ssh_port}
+      bastionUser: ${ssh_username}
+      hostname: ${cp.name}
+      privateAddress: ${cp.network[0].fixed_ip_v4}
+      sshPort: ${ssh_port}
+      sshUsername: ${ssh_username}
+      taints:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+    %{~ endfor ~}
+staticWorkers:
+  hosts:
+    %{~ for w in worker_instances ~}
+    - bastion: ${kube_api_external_ip}
+      bastionPort: ${ssh_port}
+      bastionUser: ${ssh_username}
+      hostname: ${w.name}
+      privateAddress: ${w.network[0].fixed_ip_v4}
+      sshPort: ${ssh_port}
+      sshUsername: ${ssh_username}
+    %{~ endfor ~}
+dynamicWorkers:
+  - name: ${cluster_name}-pool1
+    providerSpec:
+      annotations:
+        cluster.k8s.io/cluster-api-autoscaler-node-group-max-size: "${max_dynamic_workers}"
+        cluster.k8s.io/cluster-api-autoscaler-node-group-min-size: "${min_dynamic_workers}"
+        k8c.io/operating-system-profile: ""
+      cloudProviderSpec:
+        configDrive: false
+        flavor: ${worker_instance_flavor}
+        image: ${image_name}
+        availabilityZone: ${availability_zone}
+        network: ${private_network_name}
+        rootDiskSizeGB: ${worker_volume_size}
+        securityGroups:
+        %{~ for sg in security_groups ~}
+          - ${sg.name}
+        %{~ endfor ~}
+        subnet: ${private_network_subnet_name}
+        tags:
+          ${cluster_name}-workers: pool1
+      operatingSystem: ${operating_system}
+      operatingSystemSpec: {}
+    replicas: 1
+versions:
+  kubernetes: ${kubernetes_version}
+addons:
+  enable: true
+  path: ./addons
+  addons:
+    - name: cluster-autoscaler

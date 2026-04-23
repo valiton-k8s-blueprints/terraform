@@ -70,3 +70,9 @@ variable "destroy_timeout" {
   description = "Time to wait after uninstalling applications in seconds"
   type        = number
 }
+
+variable "dynamic_worker_cloud_init" {
+  description = "Cloud init for dynamic workers"
+  type        = string
+  default     = ""
+}

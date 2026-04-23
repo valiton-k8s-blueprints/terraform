@@ -49,3 +49,12 @@ variable "enable_ssh_bastion" {
 variable "enable_k0s_api" {
   type = bool
 }
+
+variable "enable_keystone_auth" {
+  type = bool
+}
+
+variable "keystone_auth_port" {
+  description = "Port to expose keystone auth"
+  type        = number
+}

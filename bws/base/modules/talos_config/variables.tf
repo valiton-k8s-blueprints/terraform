@@ -18,41 +18,6 @@ variable "kubernetes_version" {
   type        = string
 }
 
-variable "os_ccm_version" {
-  description = "Openstack cloud controller manager version"
-  type        = string
-}
-
-variable "os_auth_url" {
-  description = "Openstack Keystone url"
-  type        = string
-}
-
-variable "os_application_credential_id" {
-  description = "Openstack application credentials ID"
-  type        = string
-}
-
-variable "os_application_credential_secret" {
-  description = "Openstack application credentials secret"
-  default     = ""
-}
-
-variable "os_user_name" {
-  description = "Openstack user name"
-  type        = string
-}
-
-variable "public_network_id" {
-  description = "ID of the public network"
-  type        = string
-}
-
-variable "private_network_subnet_id" {
-  description = "ID of the private subnet"
-  type        = string
-}
-
 variable "talos_secrets" {
   description = "Object of secrets generated with talosctl gen secrets"
   type        = any
@@ -61,4 +26,28 @@ variable "talos_secrets" {
 variable "pod_security_exemptions_namespaces" {
   description = "List of namespaces exempt from pod security configuration"
   type        = list(string)
+}
+
+variable "k8s_keystone_ca" {
+  description = "CA for k8s-keystone"
+  type        = string
+}
+
+variable "k8s_keystone_auth_manifests" {
+  description = "Manifests for k8s-keystone"
+}
+
+variable "k8s_keystone_auth_config" {
+  description = "Webhook config for k8s-keystone"
+  type        = string
+}
+
+variable "openstack_ccm_secret" {
+  description = "Secret YAML for Openstack CCM"
+  type        = string
+}
+
+variable "cluster_domain" {
+  description = "Domain for the cluster internal DNS, usually cluster.local"
+  type        = string
 }

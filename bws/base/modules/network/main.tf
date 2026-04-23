@@ -84,6 +84,18 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_ssh_ipv4" {
   remote_ip_prefix  = var.os_private_network_cidr
 }
 
+resource "openstack_networking_secgroup_rule_v2" "ingress_keystone_auth_ipv4" {
+  count = var.enable_keystone_auth ? 1 : 0
+
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = var.keystone_auth_port
+  port_range_max    = var.keystone_auth_port
+  security_group_id = openstack_networking_secgroup_v2.external.id
+  remote_ip_prefix  = var.os_private_network_cidr
+}
+
 resource "openstack_networking_port_v2" "bastion_port" {
   count = var.enable_ssh_bastion ? 1 : 0
 
@@ -127,14 +139,14 @@ resource "openstack_networking_port_v2" "controlplane_port" {
   }
 }
 
-resource "openstack_lb_loadbalancer_v2" "talos_k8s_endpoint" {
-  name          = "${var.name_prefix}-talos-k8s-endpoint"
+resource "openstack_lb_loadbalancer_v2" "loadbalancer" {
+  name          = "${var.name_prefix}-loadbalancer"
   vip_subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
 }
 
 resource "openstack_lb_listener_v2" "kube_api" {
   name            = "${var.name_prefix}-kube-api"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.id
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
   protocol        = "TCP"
   protocol_port   = var.kube_api_external_port
 }
@@ -168,7 +180,7 @@ resource "openstack_lb_listener_v2" "talos_api" {
   count = var.enable_talos_api ? 1 : 0
 
   name            = "${var.name_prefix}-talos-api"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.id
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
   protocol        = "TCP"
   protocol_port   = 50000
 }
@@ -206,7 +218,7 @@ resource "openstack_lb_listener_v2" "k0s_api" {
   count = var.enable_k0s_api ? 1 : 0
 
   name            = "${var.name_prefix}-k0s-api"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.id
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
   protocol        = "TCP"
   protocol_port   = 9443
 }
@@ -244,7 +256,7 @@ resource "openstack_lb_listener_v2" "ssh_bastion" {
   count = var.enable_ssh_bastion ? 1 : 0
 
   name            = "${var.name_prefix}-ssh-bastion"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.id
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
   protocol        = "TCP"
   protocol_port   = 22
 }
@@ -278,7 +290,55 @@ resource "openstack_lb_member_v2" "ssh_bastion" {
   subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
 }
 
-resource "openstack_networking_floatingip_associate_v2" "talos_k8s_endpoint_ip" {
+resource "openstack_lb_listener_v2" "keystone_auth" {
+  count = var.enable_keystone_auth ? 1 : 0
+
+  name            = "${var.name_prefix}-keystone-auth"
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
+  protocol        = "TCP"
+  protocol_port   = var.keystone_auth_port
+}
+
+resource "openstack_lb_pool_v2" "keystone_auth" {
+  count = var.enable_keystone_auth ? 1 : 0
+
+  name        = "${var.name_prefix}-keystone-auth"
+  lb_method   = "ROUND_ROBIN"
+  listener_id = openstack_lb_listener_v2.keystone_auth[count.index].id
+  protocol    = "TCP"
+}
+
+resource "openstack_lb_monitor_v2" "keystone_auth" {
+  count = var.enable_keystone_auth ? 1 : 0
+
+  pool_id     = openstack_lb_pool_v2.keystone_auth[count.index].id
+  delay       = 5
+  max_retries = 4
+  timeout     = 10
+  type        = "TCP"
+}
+
+resource "openstack_lb_member_v2" "keystone_auth_controlplane" {
+  count = (var.enable_talos_api && var.enable_keystone_auth) ? var.controlplane_count : 0
+
+  name          = "${var.name_prefix}-keystone-auth"
+  address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.keystone_auth[count.index].id
+  protocol_port = var.keystone_auth_port
+  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+}
+
+resource "openstack_lb_member_v2" "keystone_auth_worker" {
+  count = var.enable_keystone_auth ? var.worker_count : 0
+
+  name          = "${var.name_prefix}-keystone-auth"
+  address       = openstack_networking_port_v2.worker_port[count.index].all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.keystone_auth[count.index].id
+  protocol_port = var.keystone_auth_port
+  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+}
+
+resource "openstack_networking_floatingip_associate_v2" "loadbalancer_ip" {
   floating_ip = var.kube_api_external_ip
-  port_id     = openstack_lb_loadbalancer_v2.talos_k8s_endpoint.vip_port_id
+  port_id     = openstack_lb_loadbalancer_v2.loadbalancer.vip_port_id
 }

@@ -14,6 +14,7 @@ resource "kubernetes_secret_v1" "os_credentials" {
   data = {
     application_credential_id     = var.os_application_credential_id
     application_credential_secret = var.os_application_credential_secret
+    dynamic_worker_cloud_init     = var.dynamic_worker_cloud_init
   }
 }
 
