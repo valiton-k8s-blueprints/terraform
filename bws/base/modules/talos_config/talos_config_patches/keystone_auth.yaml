@@ -1,0 +1,26 @@
+machine:
+  files:
+    - content: |-
+        ${indent(8, k8s_keystone_auth_ca_crt)}
+      permissions: 0o444
+      path: /var/keystone/k8s-keystone-auth-ca.crt
+      op: create
+    - content: |-
+        ${indent(8, k8s_keystone_auth_config)}
+      permissions: 0o444
+      path: /var/keystone/k8s-keystone-auth-webhook.yaml
+      op: create
+cluster:
+  apiServer:
+    extraArgs:
+      authentication-token-webhook-config-file: /var/keystone/k8s-keystone-auth-webhook.yaml
+    extraVolumes:
+      - hostPath: /var/keystone
+        mountPath: /var/keystone
+        readonly: true
+  inlineManifests:
+    %{~ for manifest in k8s_keystone_auth_manifests ~}
+    - name: ${manifest.name}
+      contents: |-
+        ${indent(8, manifest.contents)}
+    %{~ endfor ~}

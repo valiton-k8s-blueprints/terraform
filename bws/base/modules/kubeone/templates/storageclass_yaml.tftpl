@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-cinder-sc-delete
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: cinder.csi.openstack.org
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+parameters:
+  type: ${cinder_csi_plugin_volume_type}
