@@ -1,9 +1,9 @@
 variable "k8s_distribution" {
-  description = "Kubernetes distribution, one of 'talos', 'k0s', 'kubeone'"
+  description = "Kubernetes distribution, one of 'talos', 'kubeone'"
   type        = string
   validation {
-    condition     = contains(["talos", "k0s", "kubeone"], var.k8s_distribution)
-    error_message = "Valid values for k8s_distribution are talos, k0s and kubeone."
+    condition     = contains(["talos", "kubeone"], var.k8s_distribution)
+    error_message = "Valid values for k8s_distribution are talos and kubeone."
   }
 }
 
