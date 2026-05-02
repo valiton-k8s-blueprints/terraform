@@ -25,24 +25,19 @@ locals {
 
   kube_prometheus_stack_namespace = try(var.kube_prometheus_stack.namespace, "kube-prometheus-stack")
   aws_addons = {
-    enable_aws_efs_csi_driver           = try(var.addons.enable_aws_efs_csi_driver, false)
-    enable_external_dns                 = try(var.addons.enable_external_dns, false)
-    enable_external_secrets             = try(var.addons.enable_external_secrets, false)
-    enable_aws_load_balancer_controller = try(var.addons.enable_aws_load_balancer_controller, false)
-    enable_karpenter                    = try(var.addons.enable_karpenter, false)
-    enable_aws_ebs_csi_resources        = try(var.addons.enable_aws_ebs_csi_resources, false)
+    enable_aws_efs_csi_driver           = true
+    enable_external_dns                 = true
+    enable_external_secrets             = true
+    enable_aws_load_balancer_controller = true
+    enable_karpenter                    = true
+    enable_aws_ebs_csi_resources        = true
   }
 
   oss_addons = {
-    enable_argocd = try(var.addons.enable_argocd, true)
-    #enable_argo_rollouts                   = try(var.addons.enable_argo_rollouts, false)
-    #enable_argo_events                     = try(var.addons.enable_argo_events, false)
-    #enable_argo_workflows                  = try(var.addons.enable_argo_workflows, false)
-    #enable_ingress_nginx                   = try(var.addons.enable_ingress_nginx, false)
-    enable_kube_prometheus_stack = try(var.addons.enable_kube_prometheus_stack, false)
-    enable_metrics_server        = try(var.addons.enable_metrics_server, false)
-    #enable_prometheus_adapter              = try(var.addons.enable_prometheus_adapter, false)
-    enable_logging               = try(var.addons.enable_logging, true)
+    enable_argocd                = true
+    enable_kube_prometheus_stack = true
+    enable_metrics_server        = true
+    enable_logging               = true
   }
 
   addons = merge(
@@ -57,7 +52,8 @@ locals {
   addons_metadata = merge(
     module.eks_blueprints_addons.gitops_metadata,
     {
-      excluded_applications       = "{${join(",", [for key, value in var.addons : replace("${regex("enable_(.+)", key)[0]}.yaml", "_", "-") if !value])}}"
+      # excluded_applications is deprecated and will be removed in the future
+      excluded_applications       = "{${join(",", [for key, value in local.addons : replace("${regex("enable_(.+)", key)[0]}.yaml", "_", "-") if !value])}}"
       external_dns_domain_filters = local.external_dns_domain_filters
       aws_cluster_name            = local.cluster_name
       aws_region                  = local.region
