@@ -35,19 +35,12 @@ variable "ske_nodepools" {
 }
 
 
-variable "addons" {
-  description = "Kubernetes addons"
+variable "additional_addons" {
+  description = "Deprecated: Kubernetes addons, we install all addons that are defined within ArgoCD. Please use `var.metadata_labels` to disable addons (e.g. external-secrets) in case you don't need them and don't want to have the K8s resource creation enabled. This variable is still supported for backward compatibility reasons, but the addons should now be defined directly in the ArgoCD repository. This variable will be removed in future versions."
   type        = any
-  default = {
-    enable_ingress_nginx                            = true
-    enable_cert_manager                             = true
-    enable_cert_manager_default_cert                = true
-    enable_external_secrets                         = true
-    enable_external_secrets_stackit_secrets_manager = true
-    enable_kube_prometheus_stack                    = true
-  }
-
+  default     = null
 }
+
 # Addons Git
 # Applications Git
 variable "gitops_applications_repo_url" {
