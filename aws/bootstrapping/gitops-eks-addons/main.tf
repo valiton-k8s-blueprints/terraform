@@ -53,7 +53,7 @@ locals {
     module.eks_blueprints_addons.gitops_metadata,
     {
       # excluded_applications is deprecated and will be removed in the future
-      excluded_applications       = "{${join(",", [for key, value in local.addons : replace("${regex("enable_(.+)", key)[0]}.yaml", "_", "-") if !value])}}"
+      excluded_applications       = "{${join(",", [for key, value in local.addons : replace("${regex("enable_(.+)", key)[0]}.yaml", "_", "-") if can(regex("enable_(.+)", key)) && can(tobool(value)) && !tobool(value)])}}"
       external_dns_domain_filters = local.external_dns_domain_filters
       aws_cluster_name            = local.cluster_name
       aws_region                  = local.region
