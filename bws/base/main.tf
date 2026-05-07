@@ -36,6 +36,7 @@ module "network" {
   enable_k0s_api          = var.k8s_distribution == "k0s"
   enable_ssh_bastion      = var.k8s_distribution != "talos"
   enable_keystone_auth    = var.k8s_distribution != "kubeone"
+  enable_konnectivity     = var.k8s_distribution == "k0s"
 }
 
 ################################################################################
@@ -53,6 +54,7 @@ module "config" {
   os_subnet_id                     = module.network.private_network_subnet_id
   kube_api_external_ip             = var.kube_api_external_ip
   keystone_auth_port               = var.keystone_auth_port
+  keystone_auth_path               = var.k8s_distribution == "k0s" ? "/var/lib/k0s/keystone/" : "/var/keystone"
 }
 
 ################################################################################
@@ -87,6 +89,35 @@ module "kubeone-config" {
   ca_key = var.ca_key
 
   os = "ubuntu"
+}
+
+module "k0s-bootstrap" {
+  source = "./modules/k0s"
+
+  count = var.k8s_distribution == "k0s" ? 1 : 0
+
+  depends_on = [
+    module.bastion,
+    module.network,
+    module.instances
+  ]
+
+  cluster_name           = var.base_name
+  k0s_version            = var.k0s_version
+  kube_api_external_ip   = var.kube_api_external_ip
+  kube_api_external_port = var.kube_api_external_port
+
+  controlplane_instances = module.instances.controlplane_instances
+  worker_instances       = module.instances.worker_instances
+
+  openstack_helm_chart_version = local.openstack_helm_chart_version
+  openstack_ccm_secret         = module.config.openstack_ccm_secret
+
+  k8s_keystone_auth_config    = module.config.k8s_keystone_auth_config
+  k8s_keystone_auth_manifests = module.config.k8s_keystone_auth_manifests
+  k8s_keystone_ca             = module.config.k8s_keystone_ca
+
+  os_token = var.os_token
 }
 
 locals {
@@ -168,13 +199,13 @@ module "bootstrap_talos" {
 module "bootstrap_kubeone" {
   source = "./modules/kubeone"
 
+  count = var.k8s_distribution == "kubeone" ? 1 : 0
+
   depends_on = [
     module.bastion,
     module.network,
     module.instances
   ]
-
-  count = var.k8s_distribution == "kubeone" ? 1 : 0
 
   availability_zone                = var.availability_zone
   cluster_name                     = var.base_name

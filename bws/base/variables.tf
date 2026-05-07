@@ -1,8 +1,8 @@
 variable "k8s_distribution" {
-  description = "Kubernetes distribution, one of 'talos', 'kubeone'"
+  description = "Kubernetes distribution, one of 'talos', 'kubeone' or 'k0s'"
   type        = string
   validation {
-    condition     = contains(["talos", "kubeone"], var.k8s_distribution)
+    condition     = contains(["talos", "kubeone", "k0s"], var.k8s_distribution)
     error_message = "Valid values for k8s_distribution are talos and kubeone."
   }
 }
@@ -136,6 +136,12 @@ variable "kube_api_external_port" {
 variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string
+}
+
+variable "k0s_version" {
+  description = "k0s version"
+  type        = string
+  default     = ""
 }
 
 variable "openstack_ccm_version" {

@@ -72,6 +72,18 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_k0s_api_rule_ipv4" {
   remote_ip_prefix  = var.os_private_network_cidr
 }
 
+resource "openstack_networking_secgroup_rule_v2" "ingress_konnectivity_rule_ipv4" {
+  count = var.enable_konnectivity ? 1 : 0
+
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 8132
+  port_range_max    = 8132
+  security_group_id = openstack_networking_secgroup_v2.external.id
+  remote_ip_prefix  = var.os_private_network_cidr
+}
+
 resource "openstack_networking_secgroup_rule_v2" "ingress_ssh_ipv4" {
   count = var.enable_ssh_bastion ? 1 : 0
 
@@ -249,6 +261,44 @@ resource "openstack_lb_member_v2" "k0s_api" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.k0s_api[0].id
   protocol_port = 9443
+  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+}
+
+resource "openstack_lb_listener_v2" "konnectivity" {
+  count = var.enable_konnectivity ? 1 : 0
+
+  name            = "${var.name_prefix}-konnectivity"
+  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
+  protocol        = "TCP"
+  protocol_port   = 8132
+}
+
+resource "openstack_lb_pool_v2" "konnectivity" {
+  count = var.enable_konnectivity ? 1 : 0
+
+  name        = "${var.name_prefix}-konnectivity"
+  lb_method   = "ROUND_ROBIN"
+  listener_id = openstack_lb_listener_v2.konnectivity[count.index].id
+  protocol    = "TCP"
+}
+
+resource "openstack_lb_monitor_v2" "konnectivity" {
+  count = var.enable_konnectivity ? 1 : 0
+
+  pool_id     = openstack_lb_pool_v2.konnectivity[count.index].id
+  delay       = 5
+  max_retries = 4
+  timeout     = 10
+  type        = "TCP"
+}
+
+resource "openstack_lb_member_v2" "konnectivity" {
+  count = var.enable_konnectivity ? var.controlplane_count : 0
+
+  name          = "${var.name_prefix}-konnectivity-${count.index}"
+  address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
+  pool_id       = openstack_lb_pool_v2.konnectivity[0].id
+  protocol_port = 8132
   subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
 }
 

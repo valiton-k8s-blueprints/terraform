@@ -6,7 +6,7 @@ locals {
     clusters = [
       {
         cluster = {
-          certificate-authority = "/var/keystone/k8s-keystone-auth-ca.crt"
+          certificate-authority = "${var.keystone_auth_path}/k8s-keystone-auth-ca.crt"
           server                = "https://${var.kube_api_external_ip}:${var.keystone_auth_port}/webhook"
         }
         name = "webhook"

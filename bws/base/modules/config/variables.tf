@@ -42,3 +42,8 @@ variable "keystone_auth_port" {
   description = "Nodeport to expose keystone auth"
   type        = number
 }
+variable "keystone_auth_path" {
+  description = "path for keystone auth files"
+  type        = string
+  default     = "/var/keystone"
+}

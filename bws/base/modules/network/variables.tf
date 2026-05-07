@@ -50,6 +50,10 @@ variable "enable_k0s_api" {
   type = bool
 }
 
+variable "enable_konnectivity" {
+  type = bool
+}
+
 variable "enable_keystone_auth" {
   type = bool
 }

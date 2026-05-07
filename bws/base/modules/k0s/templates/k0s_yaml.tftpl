@@ -1,0 +1,60 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${cluster_name}
+  user: admin
+spec:
+  hosts:
+  %{~ for cp in controlplane_instances ~}
+    - ssh:
+        address: ${cp.network[0].fixed_ip_v4}
+        user: ${ssh_username}
+        bastion:
+          address: ${kube_api_external_ip}
+          port: ${ssh_port}
+          user: ${ssh_username}
+      role: controller
+      files:
+      %{~ for file in controlplane_files ~}
+        - data: |
+            ${indent(12, file.content)}
+          dst: ${file.path}
+          perm: "0640"
+      %{~ endfor ~}
+    %{~ endfor ~}
+  %{~ for w in worker_instances ~}
+    - ssh:
+        address: ${w.network[0].fixed_ip_v4}
+        user: ${ssh_username}
+        bastion:
+          address: ${kube_api_external_ip}
+          port: ${ssh_port}
+          user: ${ssh_username}
+      role: worker
+      installFlags:
+        - --enable-cloud-provider=true
+  %{~ endfor ~}
+  k0s:
+    version: ${k0s_version}
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: Cluster
+      metadata:
+        name: ${cluster_name}
+      spec:
+        api:
+          externalAddress: ${kube_api_external_ip}
+          sans:
+              - ${kube_api_external_ip}
+          k0sApiPort: 9443
+          port: ${kube_api_external_port}
+          extraArgs:
+            authentication-token-webhook-config-file: /var/lib/k0s/keystone/k8s-keystone-auth-webhook.yaml
+        network:
+          provider: calico
+        podSecurityPolicy:
+          defaultPolicy: 00-k0s-privileged
+        storage:
+          type: etcd
+        telemetry:
+          enabled: false
