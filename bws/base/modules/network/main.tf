@@ -160,10 +160,10 @@ resource "openstack_lb_pool_v2" "kube_api" {
 
 resource "openstack_lb_monitor_v2" "kube_api" {
   pool_id     = openstack_lb_pool_v2.kube_api.id
-  delay       = 5
-  max_retries = 4
-  timeout     = 10
-  type        = "TCP"
+  delay       = 10
+  max_retries = 3
+  timeout     = 3
+  type        = "TLS-HELLO"
 }
 
 resource "openstack_lb_member_v2" "kube_api" {
@@ -198,10 +198,10 @@ resource "openstack_lb_monitor_v2" "talos_api" {
   count = var.enable_talos_api ? 1 : 0
 
   pool_id     = openstack_lb_pool_v2.talos_api[count.index].id
-  delay       = 5
-  max_retries = 4
-  timeout     = 10
-  type        = "TCP"
+  delay       = 10
+  max_retries = 3
+  timeout     = 3
+  type        = "TLS-HELLO"
 }
 
 resource "openstack_lb_member_v2" "talos_api" {
@@ -236,9 +236,9 @@ resource "openstack_lb_monitor_v2" "k0s_api" {
   count = var.enable_k0s_api ? 1 : 0
 
   pool_id     = openstack_lb_pool_v2.k0s_api[count.index].id
-  delay       = 5
-  max_retries = 4
-  timeout     = 10
+  delay       = 10
+  max_retries = 3
+  timeout     = 3
   type        = "TCP"
 }
 
@@ -274,9 +274,9 @@ resource "openstack_lb_monitor_v2" "ssh_bastion" {
   count = var.enable_ssh_bastion ? 1 : 0
 
   pool_id     = openstack_lb_pool_v2.ssh_bastion[count.index].id
-  delay       = 5
-  max_retries = 4
-  timeout     = 10
+  delay       = 10
+  max_retries = 3
+  timeout     = 3
   type        = "TCP"
 }
 
@@ -312,9 +312,9 @@ resource "openstack_lb_monitor_v2" "keystone_auth" {
   count = var.enable_keystone_auth ? 1 : 0
 
   pool_id     = openstack_lb_pool_v2.keystone_auth[count.index].id
-  delay       = 5
-  max_retries = 4
-  timeout     = 10
+  delay       = 10
+  max_retries = 3
+  timeout     = 3
   type        = "TCP"
 }
 
@@ -323,7 +323,7 @@ resource "openstack_lb_member_v2" "keystone_auth_controlplane" {
 
   name          = "${var.name_prefix}-keystone-auth"
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
-  pool_id       = openstack_lb_pool_v2.keystone_auth[count.index].id
+  pool_id       = openstack_lb_pool_v2.keystone_auth[0].id
   protocol_port = var.keystone_auth_port
   subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
 }
@@ -333,7 +333,7 @@ resource "openstack_lb_member_v2" "keystone_auth_worker" {
 
   name          = "${var.name_prefix}-keystone-auth"
   address       = openstack_networking_port_v2.worker_port[count.index].all_fixed_ips[0]
-  pool_id       = openstack_lb_pool_v2.keystone_auth[count.index].id
+  pool_id       = openstack_lb_pool_v2.keystone_auth[0].id
   protocol_port = var.keystone_auth_port
   subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
 }
