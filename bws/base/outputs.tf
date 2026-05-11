@@ -24,19 +24,29 @@ output "os_public_network_id" {
   value       = module.network.public_network_id
 }
 
-output "os_private_network_subnet_id" {
-  description = "ID of the created private network subnet"
-  value       = module.network.private_network_subnet_id
-}
-
 output "os_private_network_name" {
   description = "Name of the private network"
   value       = module.network.private_network_name
 }
 
+output "os_private_network_id" {
+  description = "ID of the private network"
+  value       = module.network.private_network_id
+}
+
 output "os_private_network_subnet_name" {
   description = "Name of the created private network subnet"
   value       = module.network.private_network_subnet_name
+}
+
+output "os_private_network_subnet_id" {
+  description = "ID of the created private network subnet"
+  value       = module.network.private_network_subnet_id
+}
+
+output "os_private_network_router_name" {
+  description = "Name of the created router on the private network"
+  value       = module.network.private_network_router_name
 }
 
 output "cluster_health" {

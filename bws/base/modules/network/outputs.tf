@@ -13,6 +13,16 @@ output "controlplane_port_id" {
   value       = [for port in openstack_networking_port_v2.controlplane_port : port.id]
 }
 
+output "private_network_id" {
+  description = "ID of the created private network"
+  value       = openstack_networking_network_v2.private_network.id
+}
+
+output "private_network_name" {
+  description = "Name of the created private network"
+  value       = openstack_networking_network_v2.private_network.name
+}
+
 output "private_network_subnet_id" {
   description = "ID of the created private subnet"
   value       = openstack_networking_subnet_v2.private_network_subnet.id
@@ -23,9 +33,9 @@ output "private_network_subnet_name" {
   value       = openstack_networking_subnet_v2.private_network_subnet.name
 }
 
-output "private_network_name" {
-  description = "Name of the created private network"
-  value       = openstack_networking_network_v2.private_network.name
+output "private_network_router_name" {
+  description = "Name of the created router on the private network"
+  value       = openstack_networking_router_v2.private_network_router.name
 }
 
 output "public_network_id" {
