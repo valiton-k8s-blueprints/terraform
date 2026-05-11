@@ -1,0 +1,9 @@
+#cloud-config
+write_files:
+%{~ for f in files }
+- content: |
+    ${indent(4, f.content)}
+  path: ${f.path}
+%{ endfor ~}
+
+

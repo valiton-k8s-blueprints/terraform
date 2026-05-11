@@ -19,12 +19,12 @@ locals {
       worker_instances : var.worker_instances,
       worker_instance_flavor : var.worker_instance_flavor,
       worker_volume_size : var.worker_volume_size,
-      operating_system : "flatcar",
+      operating_system : "ubuntu",
       image_name : var.image_name,
       availability_zone : var.availability_zone,
       min_dynamic_workers : var.min_dynamic_workers,
       max_dynamic_workers : var.max_dynamic_workers,
-      ssh_username : "core",
+      ssh_username : "ubuntu",
       ssh_port : 22
     }
   )

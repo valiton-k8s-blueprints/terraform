@@ -85,6 +85,8 @@ module "kubeone-config" {
 
   ca_crt = var.ca_crt
   ca_key = var.ca_key
+
+  os = "ubuntu"
 }
 
 locals {
