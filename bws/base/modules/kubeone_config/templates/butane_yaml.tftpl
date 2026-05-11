@@ -1,0 +1,12 @@
+variant: flatcar
+version: 1.0.0
+kernel_arguments:
+  should_not_exist:
+    - flatcar.autologin
+storage:
+  files:
+    %{~ for f in files ~}
+    - path: ${f.path}
+      contents:
+        source: ${f.content}
+    %{~ endfor ~}
