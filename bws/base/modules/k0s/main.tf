@@ -77,7 +77,7 @@ resource "null_resource" "bootstrap_kubeone" {
   depends_on = [local_file.k0s_yaml]
 
   provisioner "local-exec" {
-    command = "k0sctl apply --config k0s.yaml"
+    command = "k0sctl apply --trace --config k0s.yaml"
   }
 
   lifecycle {
