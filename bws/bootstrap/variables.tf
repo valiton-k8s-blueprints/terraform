@@ -47,7 +47,7 @@ EOT
 variable "gitops_argocd_chart_version" {
   description = "Initial ArgoCD helm chart version to be deployed via gitOps Bridge"
   type        = string
-  default     = "8.0.17"
+  default     = "9.4.1"
 }
 
 # Applications Git

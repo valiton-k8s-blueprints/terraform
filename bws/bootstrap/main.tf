@@ -77,6 +77,10 @@ module "gitops_bridge_bootstrap" {
                   end
                   return hs
 EOF
+            "kustomize.buildOptions"             = "--enable-helm"
+          }
+          params = {
+            "controller.diff.server.side" = "true"
           }
         }
       })
