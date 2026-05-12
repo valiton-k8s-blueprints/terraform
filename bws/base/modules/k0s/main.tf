@@ -73,11 +73,11 @@ resource "local_file" "k0s_yaml" {
   }
 }
 
-resource "null_resource" "bootstrap_kubeone" {
+resource "null_resource" "bootstrap_k0s" {
   depends_on = [local_file.k0s_yaml]
 
   provisioner "local-exec" {
-    command = "k0sctl apply --trace --config k0s.yaml"
+    command = "k0sctl apply --config k0s.yaml"
   }
 
   lifecycle {
@@ -86,7 +86,7 @@ resource "null_resource" "bootstrap_kubeone" {
 }
 
 resource "null_resource" "wait_for_k8s_keystone" {
-  depends_on = [null_resource.bootstrap_kubeone]
+  depends_on = [null_resource.bootstrap_k0s]
 
   provisioner "local-exec" {
     command = "curl --fail --retry 30  --retry-all-errors --retry-delay 10 -k https://${var.kube_api_external_ip}:${var.kube_api_external_port}/api/v1/namespaces/kube-system/status --header 'Authorization: Bearer ${var.os_token}'"
