@@ -1,4 +1,4 @@
-data "openstack_images_image_v2" "talos" {
+data "openstack_images_image_v2" "image" {
   name = var.image_name
 }
 
@@ -19,7 +19,7 @@ resource "openstack_compute_instance_v2" "worker" {
   key_pair  = var.keypair_name
 
   block_device {
-    uuid                  = data.openstack_images_image_v2.talos.id
+    uuid                  = data.openstack_images_image_v2.image.id
     source_type           = "image"
     volume_size           = var.worker_volume_size
     boot_index            = 0
@@ -46,7 +46,7 @@ resource "openstack_compute_instance_v2" "controlplane" {
   key_pair  = var.keypair_name
 
   block_device {
-    uuid                  = data.openstack_images_image_v2.talos.id
+    uuid                  = data.openstack_images_image_v2.image.id
     source_type           = "image"
     volume_size           = var.controlplane_volume_size
     boot_index            = 0
