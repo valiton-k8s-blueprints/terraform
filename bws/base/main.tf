@@ -109,7 +109,7 @@ module "k0s-bootstrap" {
   depends_on = [time_sleep.wait_for_infra]
 
   cluster_name           = var.base_name
-  bastion_public_ip      = module.bastion.public_ip
+  bastion_public_ip      = module.bastion[0].public_ip
   k0s_version            = var.k0s_version
   kube_api_external_ip   = var.kube_api_external_ip
   kube_api_external_port = var.kube_api_external_port
