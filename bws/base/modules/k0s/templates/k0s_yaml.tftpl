@@ -10,7 +10,7 @@ spec:
         address: ${cp.network[0].fixed_ip_v4}
         user: ${ssh_username}
         bastion:
-          address: ${kube_api_external_ip}
+          address: ${bastion_public_ip}
           port: ${ssh_port}
           user: ${ssh_username}
       role: controller
@@ -27,7 +27,7 @@ spec:
         address: ${w.network[0].fixed_ip_v4}
         user: ${ssh_username}
         bastion:
-          address: ${kube_api_external_ip}
+          address: ${bastion_public_ip}
           port: ${ssh_port}
           user: ${ssh_username}
       role: worker

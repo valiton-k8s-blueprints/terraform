@@ -56,3 +56,8 @@ variable "os_token" {
   description = "Openstack authentication token"
   type        = string
 }
+
+variable "bastion_public_ip" {
+  description = "Public IP address of bastion host"
+  type        = string
+}

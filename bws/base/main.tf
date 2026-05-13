@@ -109,6 +109,7 @@ module "k0s-bootstrap" {
   depends_on = [time_sleep.wait_for_infra]
 
   cluster_name           = var.base_name
+  bastion_public_ip      = module.bastion.public_ip
   k0s_version            = var.k0s_version
   kube_api_external_ip   = var.kube_api_external_ip
   kube_api_external_port = var.kube_api_external_port
@@ -159,13 +160,14 @@ module "bastion" {
 
   count = var.k8s_distribution == "talos" ? 0 : 1
 
-  name_prefix     = var.base_name
-  image_name      = var.image_name
-  instance_flavor = var.bastion_instance_flavor
-  volume_type     = var.bastion_volume_type
-  volume_size     = var.bastion_volume_size
-  port_id         = module.network.bastion_port_id[0]
-  keypair_name    = var.k8s_distribution == "talos" ? null : openstack_compute_keypair_v2.keypair[0].name
+  name_prefix            = var.base_name
+  image_name             = var.image_name
+  instance_flavor        = var.bastion_instance_flavor
+  volume_type            = var.bastion_volume_type
+  volume_size            = var.bastion_volume_size
+  port_id                = module.network.bastion_port_id[0]
+  keypair_name           = var.k8s_distribution == "talos" ? null : openstack_compute_keypair_v2.keypair[0].name
+  os_public_network_name = var.os_public_network_name
 }
 
 module "bootstrap_talos" {

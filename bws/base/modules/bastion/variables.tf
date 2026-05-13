@@ -32,3 +32,8 @@ variable "keypair_name" {
   description = "Name of existing SSH key pair"
   type        = string
 }
+
+variable "os_public_network_name" {
+  description = "Public network name"
+  type        = string
+}
