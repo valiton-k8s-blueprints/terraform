@@ -91,16 +91,22 @@ module "kubeone-config" {
   os = "ubuntu"
 }
 
-module "k0s-bootstrap" {
-  source = "./modules/k0s"
-
-  count = var.k8s_distribution == "k0s" ? 1 : 0
-
+resource "time_sleep" "wait_for_infra" {
   depends_on = [
     module.bastion,
     module.network,
     module.instances
   ]
+
+  create_duration = "60s"
+}
+
+module "k0s-bootstrap" {
+  source = "./modules/k0s"
+
+  count = var.k8s_distribution == "k0s" ? 1 : 0
+
+  depends_on = [time_sleep.wait_for_infra]
 
   cluster_name           = var.base_name
   k0s_version            = var.k0s_version
