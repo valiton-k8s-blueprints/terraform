@@ -158,6 +158,8 @@ module "instances" {
 module "bastion" {
   source = "./modules/bastion"
 
+  depends_on = [module.network.router_id]
+
   count = var.k8s_distribution == "talos" ? 0 : 1
 
   name_prefix            = var.base_name
