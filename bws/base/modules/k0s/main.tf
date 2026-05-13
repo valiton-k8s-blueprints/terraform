@@ -3,7 +3,7 @@ locals {
     "${path.module}/templates/k0s_yaml.tftpl",
     {
       cluster_name : var.cluster_name,
-      bastion_public_ip : var.bastion_public_ip,
+      bastion_public_ip : var.kube_api_external_ip,
       kube_api_external_ip : var.kube_api_external_ip,
       kube_api_external_port : var.kube_api_external_port,
       k0s_version : var.k0s_version,
