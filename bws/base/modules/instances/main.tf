@@ -1,5 +1,6 @@
 data "openstack_images_image_v2" "image" {
-  name = var.image_name
+  name        = var.image_name
+  most_recent = true
 }
 
 data "openstack_compute_flavor_v2" "worker_flavor" {
