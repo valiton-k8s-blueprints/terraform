@@ -57,7 +57,3 @@ output "worker_fixed_ips" {
   description = "Fixed (private) IPs of worker nodes"
   value       = [for port in openstack_networking_port_v2.worker_port : port.all_fixed_ips[0]]
 }
-
-output "router_id" {
-  value = openstack_networking_router_v2.private_network_router.id
-}
