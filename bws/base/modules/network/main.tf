@@ -309,9 +309,6 @@ resource "openstack_lb_listener_v2" "ssh_bastion" {
   loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
   protocol        = "TCP"
   protocol_port   = 22
-
-  timeout_client_data = 600000
-  timeout_member_data = 600000
 }
 
 resource "openstack_lb_pool_v2" "ssh_bastion" {
