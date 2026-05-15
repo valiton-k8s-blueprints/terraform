@@ -1,3 +1,9 @@
+output "argocd_cluster" {
+  description = "Created ArgoCD cluster secret"
+  value       = module.gitops_bridge_bootstrap.cluster
+  sensitive   = true
+}
+
 output "x_access_argocd" {
   description = "ArgoCD Access"
   value       = <<-EOT
