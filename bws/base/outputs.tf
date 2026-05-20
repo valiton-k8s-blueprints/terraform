@@ -51,7 +51,7 @@ output "os_private_network_router_name" {
 
 output "os_ssh_keypair_name" {
   description = "Name of the created key pair"
-  value       = openstack_compute_keypair_v2.keypair.name
+  value       = try(openstack_compute_keypair_v2.keypair[0].name, null)
 }
 
 output "internal_security_group_name" {
