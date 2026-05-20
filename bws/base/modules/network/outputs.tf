@@ -48,6 +48,11 @@ output "security_groups" {
   value       = [openstack_networking_secgroup_v2.external, openstack_networking_secgroup_v2.private_network_allow_internal]
 }
 
+output "internal_security_group_name" {
+  description = "Created internal security group"
+  value       = openstack_networking_secgroup_v2.private_network_allow_internal.name
+}
+
 output "controlplane_fixed_ips" {
   description = "Fixed (private) IPs of controlplane nodes"
   value       = [for port in openstack_networking_port_v2.controlplane_port : port.all_fixed_ips[0]]

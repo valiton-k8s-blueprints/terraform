@@ -49,6 +49,16 @@ output "os_private_network_router_name" {
   value       = module.network.private_network_router_name
 }
 
+output "os_ssh_keypair_name" {
+  description = "Name of the created key pair"
+  value       = openstack_compute_keypair_v2.keypair.name
+}
+
+output "internal_security_group_name" {
+  description = "Name of created internal security group"
+  value       = module.network.internal_security_group_name
+}
+
 output "cluster_health" {
   value = var.k8s_distribution == "talos" ? module.bootstrap_talos[0].cluster_health : null
 }
