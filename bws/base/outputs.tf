@@ -44,6 +44,11 @@ output "os_private_network_subnet_id" {
   value       = module.network.private_network_subnet_id
 }
 
+output "os_private_network_subnet_cidr" {
+  description = "CIDR of the created private network subnet"
+  value       = local.private_network_cidr
+}
+
 output "os_private_network_router_name" {
   description = "Name of the created router on the private network"
   value       = module.network.private_network_router_name
