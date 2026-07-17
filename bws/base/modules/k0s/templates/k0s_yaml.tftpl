@@ -21,7 +21,9 @@ spec:
           dst: ${file.path}
           perm: "0640"
       %{~ endfor ~}
-    %{~ endfor ~}
+      installFlags:
+        - --disable-components=metrics-server
+  %{~ endfor ~}
   %{~ for w in worker_instances ~}
     - ssh:
         address: ${w.network[0].fixed_ip_v4}
