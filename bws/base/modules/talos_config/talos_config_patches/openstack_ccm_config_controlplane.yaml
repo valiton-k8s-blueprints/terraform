@@ -1,0 +1,5 @@
+cluster:
+  inlineManifests:
+    - name: ccm-config
+      contents: |-
+        ${indent(8, openstack_ccm_secret)}

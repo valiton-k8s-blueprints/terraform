@@ -1,0 +1,16 @@
+apiVersion: helm.k0sproject.io/v1beta1
+kind: Chart
+metadata:
+  name: ${name}
+  namespace: kube-system
+spec:
+  chartName: ${name}/${chart_name}
+  version: "${chart_version}"
+  namespace: ${target_namespace}
+  releaseName: ${name}
+  %{~ if values != {} ~}
+  values: |
+    ${indent(4, yamlencode(values))}
+  %{~ endif ~}
+  repository:
+    url: ${chart_repository}
