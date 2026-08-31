@@ -36,22 +36,9 @@ variable "eks_managed_node_groups" {
 
 
 variable "addons" {
-  description = "Kubernetes addons"
+  description = "Deprecated: Kubernetes addons, we install all addons that are defined within ArgoCD. Please use `var.metadata_labels` to disable addons (e.g. external-secrets) in case you don't need them and don't want to have the K8s resource creation enabled. This variable is still supported for backward compatibility reasons, but the addons should now be defined directly in the ArgoCD repository. This variable will be removed in future versions."
   type        = any
-  default = {
-    enable_aws_ebs_csi_resources        = true
-    enable_metrics_server               = true
-    enable_aws_efs_csi_driver           = true
-    enable_aws_load_balancer_controller = true
-    enable_external_secrets             = true
-    enable_external_dns                 = true
-    enable_karpenter                    = true
-    enable_kube_prometheus_stack        = true
-    enable_logging                      = true
-    enable_cert_manager                 = false
-    enable_cert_manager_issuers         = false
-    enable_ingress_nginx                = false
-  }
+  default     = null
 
 }
 # Applications Git
