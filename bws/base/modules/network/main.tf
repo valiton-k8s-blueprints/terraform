@@ -157,10 +157,12 @@ resource "openstack_lb_loadbalancer_v2" "loadbalancer" {
 }
 
 resource "openstack_lb_listener_v2" "kube_api" {
-  name            = "${var.name_prefix}-kube-api"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
-  protocol        = "TCP"
-  protocol_port   = var.kube_api_external_port
+  name                = "${var.name_prefix}-kube-api"
+  loadbalancer_id     = openstack_lb_loadbalancer_v2.loadbalancer.id
+  protocol            = "TCP"
+  protocol_port       = var.kube_api_external_port
+  timeout_client_data = 1800000
+  timeout_member_data = 1800000
 }
 
 resource "openstack_lb_pool_v2" "kube_api" {
