@@ -5,7 +5,12 @@ locals {
     service_account = try(var.cluster_secrets.service_account, "access-cluster-secrets")
   }
 
-  addons = var.metadata_labels
+  addons = merge(
+    coalesce(var.metadata_labels, {}),
+    {
+      deploy_applications = "true"
+    }
+  )
 
   metadata_annotations = merge(
     var.metadata_annotations,
