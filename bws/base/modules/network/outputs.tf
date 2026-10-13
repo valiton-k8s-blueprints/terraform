@@ -14,28 +14,33 @@ output "controlplane_port_id" {
 }
 
 output "private_network_id" {
-  description = "ID of the created private network"
-  value       = openstack_networking_network_v2.private_network.id
+  description = "ID of the selected private network"
+  value       = local.private_network_id
 }
 
 output "private_network_name" {
-  description = "Name of the created private network"
-  value       = openstack_networking_network_v2.private_network.name
+  description = "Name of the selected private network"
+  value       = local.private_network_name
 }
 
 output "private_network_subnet_id" {
-  description = "ID of the created private subnet"
-  value       = openstack_networking_subnet_v2.private_network_subnet.id
+  description = "ID of the selected private subnet"
+  value       = local.private_network_subnet_id
 }
 
 output "private_network_subnet_name" {
-  description = "Name of the created private subnet"
-  value       = openstack_networking_subnet_v2.private_network_subnet.name
+  description = "Name of the selected private subnet"
+  value       = local.private_network_subnet_name
+}
+
+output "private_network_subnet_cidr" {
+  description = "Actual IPv4 CIDR of the selected private subnet"
+  value       = local.private_network_subnet_cidr
 }
 
 output "private_network_router_name" {
-  description = "Name of the created router on the private network"
-  value       = openstack_networking_router_v2.private_network_router.name
+  description = "Name of the managed router, or null for existing networking"
+  value       = local.create_private_network ? openstack_networking_router_v2.private_network_router[0].name : null
 }
 
 output "public_network_id" {

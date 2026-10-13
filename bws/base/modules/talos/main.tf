@@ -23,6 +23,10 @@ resource "talos_machine_configuration_apply" "worker" {
 ########################
 # Boostrap cluster
 ########################
+resource "terraform_data" "bootstrap_node" {
+  triggers_replace = var.bootstrap_node_id
+}
+
 resource "talos_machine_bootstrap" "cluster" {
   depends_on = [
     talos_machine_configuration_apply.controlplane,
@@ -33,10 +37,18 @@ resource "talos_machine_bootstrap" "cluster" {
 
   node     = var.controlplane_names[0]
   endpoint = var.kube_api_external_ip
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.bootstrap_node]
+  }
 }
 
 resource "null_resource" "wait_for_k8s_keystone" {
   depends_on = [talos_machine_bootstrap.cluster]
+
+  triggers = {
+    bootstrap_node_id = var.bootstrap_node_id
+  }
 
   provisioner "local-exec" {
     command = "curl --fail --retry 30  --retry-all-errors --retry-delay 10 -k https://${var.kube_api_external_ip}:${var.kube_api_external_port}/api/v1/namespaces/kube-system/status --header 'Authorization: Bearer ${var.os_token}'"

@@ -10,7 +10,7 @@ variable "ca_key" {
 
 variable "os" {
   description = "Type of OS"
-  type = string
+  type        = string
   validation {
     condition     = contains(["ubuntu", "flatcar"], var.os)
     error_message = "Valid values for os are ubuntu and flatcar."
