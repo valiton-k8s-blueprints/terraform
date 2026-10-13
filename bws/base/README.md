@@ -58,26 +58,12 @@ terraform output -raw worker_machine_configuration > worker.yaml
 
 `os_private_network_mode` supports `managed` (the default) and `existing`.
 Existing mode looks up the shared network and the subnet named by
-`os_private_network_subnet_name`. `os_private_network_cidr` is only used for
+`os_private_network_subnet_name`; supply the actual network and subnet names.
+It does not fall back to creating networking if a lookup fails.
+`os_private_network_cidr` is only used for
 managed networking; the module exports the selected subnet's actual CIDR.
 Cluster-specific ports, security groups, and API load balancing remain managed
 in both modes.
-
-The `moved` declarations preserve resource addresses when upgrading state from
-the previous module layout. Switching modes on populated state can replace node
-boot disks and destroy old etcd state, so it requires a reviewed
-clean-redeployment plan.
-
-## Talos configuration and bootstrap
-
-Both Talos configuration generators use the `v1.13` contract to avoid
-inconsistent plans with the Talos provider. The Talos client-key output is
-sensitive.
-
-Bootstrap is replaced when the primary control-plane VM identity changes so a
-replacement cluster initializes etcd. This behavior is intended for clean
-cluster replacement, not rolling control-plane replacement in a surviving etcd
-cluster.
 
 ## Requirements
 

@@ -21,7 +21,9 @@ moved {
 resource "random_integer" "ip_part" {
   count = var.os_private_network_mode == "managed" && var.os_private_network_cidr == "" ? 1 : 0
 
+  # prevent overlap with 10.96.0.0/12
   min = 112
+  # prevent overlap with 10.244.0.0/16
   max = 243
 }
 

@@ -18,5 +18,4 @@ output "talos_client_crt" {
 output "talos_client_key" {
   description = "Talos client key"
   value       = tls_private_key.talos_client_key.private_key_pem
-  sensitive   = true
 }
