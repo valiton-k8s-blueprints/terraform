@@ -34,5 +34,5 @@ locals {
 
 data "ct_config" "controlplane_ignition" {
   content = local.content_butane
-  strict  = true
+  strict = true
 }

@@ -23,6 +23,7 @@ spec:
       %{~ endfor ~}
       installFlags:
         - --disable-components=metrics-server
+        - --enable-metrics-scraper
   %{~ endfor ~}
   %{~ for w in worker_instances ~}
     - ssh:
