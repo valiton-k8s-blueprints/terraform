@@ -241,10 +241,12 @@ resource "openstack_lb_loadbalancer_v2" "loadbalancer" {
 }
 
 resource "openstack_lb_listener_v2" "kube_api" {
-  name            = "${var.name_prefix}-kube-api"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
-  protocol        = "TCP"
-  protocol_port   = var.kube_api_external_port
+  name                = "${var.name_prefix}-kube-api"
+  loadbalancer_id     = openstack_lb_loadbalancer_v2.loadbalancer.id
+  protocol            = "TCP"
+  protocol_port       = var.kube_api_external_port
+  timeout_client_data = 1800000
+  timeout_member_data = 1800000
 }
 
 resource "openstack_lb_pool_v2" "kube_api" {
@@ -351,10 +353,12 @@ resource "openstack_lb_member_v2" "k0s_api" {
 resource "openstack_lb_listener_v2" "konnectivity" {
   count = var.enable_konnectivity ? 1 : 0
 
-  name            = "${var.name_prefix}-konnectivity"
-  loadbalancer_id = openstack_lb_loadbalancer_v2.loadbalancer.id
-  protocol        = "TCP"
-  protocol_port   = 8132
+  name                = "${var.name_prefix}-konnectivity"
+  loadbalancer_id     = openstack_lb_loadbalancer_v2.loadbalancer.id
+  protocol            = "TCP"
+  protocol_port       = 8132
+  timeout_client_data = 5400000
+  timeout_member_data = 5400000
 }
 
 resource "openstack_lb_pool_v2" "konnectivity" {
