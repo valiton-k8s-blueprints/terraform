@@ -54,6 +54,11 @@ terraform output -raw controlplane_machine_configuration > controlplane.yaml
 terraform output -raw worker_machine_configuration > worker.yaml
 ```
 
+Talos machine-configuration generation uses the pinned `v1.13` configuration
+contract. This controls the generated schema and defaults, not the installed
+Talos OS version. Preserve it during unrelated module changes; changing the
+contract requires deliberate review of the resulting node configuration updates.
+
 ## Private network configuration
 
 Omit `os_existing_private_network` (or set it to `null`) to create a private
