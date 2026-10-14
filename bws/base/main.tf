@@ -187,7 +187,6 @@ module "bootstrap_talos" {
 
   talos_secrets = var.talos_secrets
 
-  bootstrap_node_id                  = module.instances.controlplane_instances[0].id
   controlplane_count                 = var.controlplane_count
   controlplane_machine_configuration = module.talos-config[0].controlplane_machine_configuration
   controlplane_names                 = module.network.controlplane_fixed_ips

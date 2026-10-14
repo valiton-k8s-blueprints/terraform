@@ -51,7 +51,7 @@ variable "os_private_network_subnet_name" {
 }
 
 variable "os_private_network_cidr" {
-  description = "Optional IPv4 CIDR for managed networking; leave empty in existing mode"
+  description = "Optional IPv4 CIDR for managed networking; leave empty in existing mode, if empty a random CIDR will be chosen, 10.244.0.0/16 and 10.96.0.0/12 are used by Talos"
   type        = string
   default     = ""
 }

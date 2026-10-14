@@ -42,11 +42,6 @@ variable "controlplane_count" {
   type        = number
 }
 
-variable "bootstrap_node_id" {
-  description = "Primary controlplane instance identity; replacement requires a fresh cluster bootstrap"
-  type        = string
-}
-
 variable "kube_api_external_ip" {
   description = "External IP of Kube API"
   type        = string
