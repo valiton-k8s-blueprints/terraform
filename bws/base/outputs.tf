@@ -64,6 +64,11 @@ output "internal_security_group_name" {
   value       = module.network.internal_security_group_name
 }
 
+output "internal_security_group_id" {
+  description = "ID of the created internal security group"
+  value       = module.network.internal_security_group_id
+}
+
 output "cluster_health" {
   value = var.k8s_distribution == "talos" ? module.bootstrap_talos[0].cluster_health : null
 }

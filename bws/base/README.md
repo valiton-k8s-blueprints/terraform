@@ -88,6 +88,11 @@ in both cases. `os_private_network_name` remains required and also participates
 in cluster-specific security-group naming, even when the lookup names come
 from the object.
 
+For additional rules in the cluster's internal security group, reference
+`module.base.internal_security_group_id` directly. This preserves the resource
+dependency without a name lookup or a whole-module `depends_on`, which can defer
+the lookup and unnecessarily replace rules when unrelated base resources change.
+
 ### Migrating from the mode selector
 
 `os_private_network_mode` has been removed. For previously managed networking,
@@ -105,11 +110,13 @@ Do not apply a plan that destroys networking you intend to keep.
 
 ### Testing
 
-From `bws/base/modules/network`, run `terraform init -backend=false` and
-`terraform test`. The focused tests use mocked providers and require a test
-runner supporting provider mocks (Terraform 1.7 or newer). They do not apply
-real infrastructure; actual missing or ambiguous OpenStack lookups require
-separate provider-backed verification.
+From `bws/base/modules/network`, run `tofu init -backend=false` and `tofu test`.
+The focused tests use mocked providers and plan-only runs, including checks for
+managed/existing networking, selected subnet usage, security-group outputs, and
+invalid inputs. They require a runner supporting provider mocks and have been
+verified with OpenTofu 1.13.1. They do not apply real infrastructure; actual
+missing or ambiguous OpenStack lookups require separate provider-backed
+verification.
 
 ## Requirements
 
