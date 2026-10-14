@@ -41,14 +41,10 @@ locals {
 
 
   ske_addons = {
-    enable_argocd                                   = try(var.addons.enable_argocd, true)
-    enable_ingress_nginx                            = try(var.addons.enable_ingress_nginx, false)
-    enable_cert_manager                             = try(var.addons.enable_cert_manager, false)
-    enable_cert_manager_default_cert                = try(var.addons.enable_cert_manager_default_cert, false)
-    enable_kube_prometheus_stack                    = try(var.addons.enable_kube_prometheus_stack, false)
-    enable_metrics_server                           = try(var.addons.enable_metrics_server, false)
-    enable_external_secrets                         = try(var.addons.enable_external_secrets, false)
-    enable_external_secrets_stackit_secrets_manager = try(var.addons.enable_external_secrets_stackit_secrets_manager, false)
+    enable_cert_manager                             = true
+    enable_cert_manager_default_cert                = true
+    enable_external_secrets                         = true
+    enable_external_secrets_stackit_secrets_manager = true
   }
 
 
