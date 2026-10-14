@@ -18,6 +18,17 @@ variable "kubernetes_version" {
   type        = string
 }
 
+variable "talos_config_version" {
+  description = "Optional Talos configuration-generation contract; null preserves provider defaults, while a version pins the schema and defaults without upgrading the OS"
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.talos_config_version == null ? true : can(regex("^v?[0-9]+\\.[0-9]+(\\.[0-9]+)?$", var.talos_config_version))
+    error_message = "The Talos configuration version must be null or a version such as v1.13 or v1.13.1, optionally without the v prefix."
+  }
+}
+
 variable "talos_secrets" {
   description = "Object of secrets generated with talosctl gen secrets"
   type        = any

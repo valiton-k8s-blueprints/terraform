@@ -69,6 +69,7 @@ module "talos-config" {
   kube_api_external_ip   = var.kube_api_external_ip
   kube_api_external_port = var.kube_api_external_port
   kubernetes_version     = var.kubernetes_version
+  talos_config_version   = var.talos_config_version
 
   pod_security_exemptions_namespaces = var.pod_security_exemptions_namespaces
 
