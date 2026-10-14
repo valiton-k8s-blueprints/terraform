@@ -65,7 +65,6 @@ data "talos_machine_configuration" "controlplane" {
   machine_type       = "controlplane"
   machine_secrets    = local.mapped_secrets
   kubernetes_version = var.kubernetes_version
-  talos_version      = "v1.13"
 
   config_patches = concat(local.config_patches, local.controlplane_config_patches)
 }
@@ -76,7 +75,6 @@ data "talos_machine_configuration" "worker" {
   machine_type       = "worker"
   machine_secrets    = local.mapped_secrets
   kubernetes_version = var.kubernetes_version
-  talos_version      = "v1.13"
 
   config_patches = local.config_patches
 }
