@@ -56,14 +56,60 @@ terraform output -raw worker_machine_configuration > worker.yaml
 
 ## Private network configuration
 
-`os_private_network_mode` supports `managed` (the default) and `existing`.
-Existing mode looks up the shared network and the subnet named by
-`os_private_network_subnet_name`; supply the actual network and subnet names.
-It does not fall back to creating networking if a lookup fails.
-`os_private_network_cidr` is only used for
-managed networking; the module exports the selected subnet's actual CIDR.
+Omit `os_existing_private_network` (or set it to `null`) to create a private
+network, subnet, router, and router interface. `os_private_network_name` names
+the created network, prefixed with `base_name`. The optional
+`os_private_network_subnet_name` overrides the created subnet's name; otherwise
+it is derived from `base_name` and `os_private_network_name`.
+`os_private_network_cidr` sets the created subnet's IPv4 CIDR; leaving it empty
+generates a CIDR.
+
+To reuse networking, supply the exact existing network and subnet names:
+
+```hcl
+os_existing_private_network = {
+  network_name = "shared-private-network"
+  subnet_name  = "shared-private-subnet"
+}
+```
+
+Both object fields must be non-null and nonblank. Partial or invalid objects
+are errors, not requests to create networking. The subnet must belong to the
+selected network and use IPv4. Missing or ambiguous lookups fail; the module
+never falls back to creating networking. Leave `os_private_network_cidr` empty
+when reusing a subnet; the module exports the selected subnet's actual CIDR.
+The object must be supplied as a plan-time-known value because its presence
+determines whether Terraform creates networking.
+
+Reused networking must already have the required routing and connectivity;
+the module does not manage its network, subnet, router, or router interface.
 Cluster-specific ports, security groups, and API load balancing remain managed
-in both modes.
+in both cases. `os_private_network_name` remains required and also participates
+in cluster-specific security-group naming, even when the lookup names come
+from the object.
+
+### Migrating from the mode selector
+
+`os_private_network_mode` has been removed. For previously managed networking,
+remove the `managed` selector and retain the current naming and CIDR inputs.
+For previously existing networking, move the exact lookup names from
+`os_private_network_name` and `os_private_network_subnet_name` into
+`os_existing_private_network` and remove the `existing` selector. Retain
+`os_private_network_name` to preserve cluster-specific security-group names;
+`os_private_network_subnet_name` now only controls created-subnet naming.
+
+Changing an already managed deployment to reuse is **not** an ownership/state
+migration: Terraform may plan to destroy the formerly managed resources.
+Review the plan and deliberately transfer state ownership before applying.
+Do not apply a plan that destroys networking you intend to keep.
+
+### Testing
+
+From `bws/base/modules/network`, run `terraform init -backend=false` and
+`terraform test`. The focused tests use mocked providers and require a test
+runner supporting provider mocks (Terraform 1.7 or newer). They do not apply
+real infrastructure; actual missing or ambiguous OpenStack lookups require
+separate provider-backed verification.
 
 ## Requirements
 

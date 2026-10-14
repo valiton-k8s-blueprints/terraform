@@ -23,23 +23,29 @@ variable "os_public_network_name" {
 }
 
 variable "os_private_network_name" {
-  description = "Exact private network name in existing mode; prefixed with base_name in managed mode"
+  description = "Name of the created private network, prefixed with base_name; also used in cluster security-group naming"
   type        = string
 }
 
-variable "os_private_network_mode" {
-  description = "Use managed to create private networking or existing to reuse it"
-  type        = string
-  default     = "managed"
+variable "os_existing_private_network" {
+  description = "Existing private network and IPv4 subnet to reuse; null creates networking"
+  type = object({
+    network_name = string
+    subnet_name  = string
+  })
+  default = null
 
   validation {
-    condition     = contains(["managed", "existing"], var.os_private_network_mode)
-    error_message = "The private network mode must be managed or existing."
+    condition = var.os_existing_private_network == null ? true : (
+      can(regex("\\S", trimspace(var.os_existing_private_network.network_name))) &&
+      can(regex("\\S", trimspace(var.os_existing_private_network.subnet_name)))
+    )
+    error_message = "Existing networking requires non-null, nonblank network_name and subnet_name."
   }
 }
 
 variable "os_private_network_subnet_name" {
-  description = "Exact subnet name; required in existing mode, optional in managed mode"
+  description = "Name of the created private subnet; empty derives it from base_name and os_private_network_name"
   type        = string
   default     = ""
 }
@@ -234,4 +240,3 @@ variable "keystone_auth_port" {
   description = "Port of keystone auth"
   type        = number
 }
-

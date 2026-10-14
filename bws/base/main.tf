@@ -23,7 +23,7 @@ module "network" {
   name_prefix                    = var.base_name
   os_public_network_name         = var.os_public_network_name
   os_private_network_name        = var.os_private_network_name
-  os_private_network_mode        = var.os_private_network_mode
+  os_existing_private_network    = var.os_existing_private_network
   os_private_network_subnet_name = var.os_private_network_subnet_name
   os_private_network_cidr        = var.os_private_network_cidr
   worker_count                   = var.worker_count

@@ -19,7 +19,7 @@ moved {
 }
 
 resource "random_integer" "ip_part" {
-  count = var.os_private_network_mode == "managed" && var.os_private_network_cidr == "" ? 1 : 0
+  count = local.create_private_network && var.os_private_network_cidr == "" ? 1 : 0
 
   # prevent overlap with 10.96.0.0/12
   min = 112
@@ -28,7 +28,7 @@ resource "random_integer" "ip_part" {
 }
 
 locals {
-  create_private_network      = var.os_private_network_mode == "managed"
+  create_private_network      = var.os_existing_private_network == null
   managed_network_cidr        = var.os_private_network_cidr != "" ? var.os_private_network_cidr : (local.create_private_network ? "10.${random_integer.ip_part[0].result}.0.0/16" : "")
   private_network_id          = local.create_private_network ? openstack_networking_network_v2.private_network[0].id : data.openstack_networking_network_v2.private_network[0].id
   private_network_name        = local.create_private_network ? openstack_networking_network_v2.private_network[0].name : data.openstack_networking_network_v2.private_network[0].name
@@ -42,28 +42,22 @@ data "openstack_networking_network_v2" "public_network" {
 
   lifecycle {
     precondition {
-      condition     = local.create_private_network || trimspace(var.os_private_network_subnet_name) != ""
-      error_message = "Existing networking requires an explicit private subnet name."
-    }
-
-    precondition {
       condition     = local.create_private_network || var.os_private_network_cidr == ""
       error_message = "Existing networking derives its CIDR from the subnet; leave os_private_network_cidr empty."
     }
-
   }
 }
 
 data "openstack_networking_network_v2" "private_network" {
   count = local.create_private_network ? 0 : 1
 
-  name = var.os_private_network_name
+  name = var.os_existing_private_network.network_name
 }
 
 data "openstack_networking_subnet_v2" "private_network_subnet" {
   count = local.create_private_network ? 0 : 1
 
-  name       = var.os_private_network_subnet_name
+  name       = var.os_existing_private_network.subnet_name
   network_id = data.openstack_networking_network_v2.private_network[0].id
   ip_version = 4
 
