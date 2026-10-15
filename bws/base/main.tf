@@ -1,8 +1,3 @@
-moved {
-  from = random_integer.ip_part
-  to   = module.network.random_integer.ip_part[0]
-}
-
 resource "openstack_compute_keypair_v2" "keypair" {
   count = var.k8s_distribution == "talos" ? 0 : 1
 

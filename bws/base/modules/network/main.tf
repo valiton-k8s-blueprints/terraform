@@ -1,23 +1,3 @@
-moved {
-  from = openstack_networking_network_v2.private_network
-  to   = openstack_networking_network_v2.private_network[0]
-}
-
-moved {
-  from = openstack_networking_subnet_v2.private_network_subnet
-  to   = openstack_networking_subnet_v2.private_network_subnet[0]
-}
-
-moved {
-  from = openstack_networking_router_v2.private_network_router
-  to   = openstack_networking_router_v2.private_network_router[0]
-}
-
-moved {
-  from = openstack_networking_router_interface_v2.private_network_router_interface
-  to   = openstack_networking_router_interface_v2.private_network_router_interface[0]
-}
-
 resource "random_integer" "ip_part" {
   count = local.create_private_network && var.os_private_network_cidr == "" ? 1 : 0
 
