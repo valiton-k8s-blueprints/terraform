@@ -1,10 +1,3 @@
-resource "random_integer" "ip_part" {
-  # prevent overlap with 10.96.0.0/12
-  min = 112
-  # prevent overlap with 10.244.0.0/16
-  max = 243
-}
-
 resource "openstack_compute_keypair_v2" "keypair" {
   count = var.k8s_distribution == "talos" ? 0 : 1
 
@@ -13,7 +6,6 @@ resource "openstack_compute_keypair_v2" "keypair" {
 }
 
 locals {
-  private_network_cidr         = var.os_private_network_cidr != "" ? var.os_private_network_cidr : "10.${random_integer.ip_part.result}.0.0/16"
   openstack_helm_chart_version = replace(var.openstack_ccm_version, "v1", "2")
 }
 
@@ -23,20 +15,22 @@ locals {
 module "network" {
   source = "./modules/network"
 
-  name_prefix             = var.base_name
-  os_public_network_name  = var.os_public_network_name
-  os_private_network_name = var.os_private_network_name
-  os_private_network_cidr = local.private_network_cidr
-  worker_count            = var.worker_count
-  controlplane_count      = var.controlplane_count
-  kube_api_external_ip    = var.kube_api_external_ip
-  kube_api_external_port  = var.kube_api_external_port
-  keystone_auth_port      = var.keystone_auth_port
-  enable_talos_api        = var.k8s_distribution == "talos"
-  enable_k0s_api          = var.k8s_distribution == "k0s"
-  enable_ssh_bastion      = var.k8s_distribution != "talos"
-  enable_keystone_auth    = var.k8s_distribution != "kubeone"
-  enable_konnectivity     = var.k8s_distribution == "k0s"
+  name_prefix                    = var.base_name
+  os_public_network_name         = var.os_public_network_name
+  os_private_network_name        = var.os_private_network_name
+  os_existing_private_network    = var.os_existing_private_network
+  os_private_network_subnet_name = var.os_private_network_subnet_name
+  os_private_network_cidr        = var.os_private_network_cidr
+  worker_count                   = var.worker_count
+  controlplane_count             = var.controlplane_count
+  kube_api_external_ip           = var.kube_api_external_ip
+  kube_api_external_port         = var.kube_api_external_port
+  keystone_auth_port             = var.keystone_auth_port
+  enable_talos_api               = var.k8s_distribution == "talos"
+  enable_k0s_api                 = var.k8s_distribution == "k0s"
+  enable_ssh_bastion             = var.k8s_distribution != "talos"
+  enable_keystone_auth           = var.k8s_distribution != "kubeone"
+  enable_konnectivity            = var.k8s_distribution == "k0s"
 }
 
 ################################################################################
@@ -70,6 +64,7 @@ module "talos-config" {
   kube_api_external_ip   = var.kube_api_external_ip
   kube_api_external_port = var.kube_api_external_port
   kubernetes_version     = var.kubernetes_version
+  talos_config_version   = var.talos_config_version
 
   pod_security_exemptions_namespaces = var.pod_security_exemptions_namespaces
 

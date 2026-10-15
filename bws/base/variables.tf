@@ -23,12 +23,35 @@ variable "os_public_network_name" {
 }
 
 variable "os_private_network_name" {
-  description = "Name of the private network, will be prefixed with base_name"
+  description = "Name of the created private network, prefixed with base_name; also used in cluster security-group naming"
   type        = string
 }
 
+variable "os_existing_private_network" {
+  description = "Existing private network and IPv4 subnet to reuse; null creates networking"
+  type = object({
+    network_name = string
+    subnet_name  = string
+  })
+  default = null
+
+  validation {
+    condition = var.os_existing_private_network == null ? true : (
+      can(regex("\\S", trimspace(var.os_existing_private_network.network_name))) &&
+      can(regex("\\S", trimspace(var.os_existing_private_network.subnet_name)))
+    )
+    error_message = "Existing networking requires non-null, nonblank network_name and subnet_name."
+  }
+}
+
+variable "os_private_network_subnet_name" {
+  description = "Name of the created private subnet; empty derives it from base_name and os_private_network_name"
+  type        = string
+  default     = ""
+}
+
 variable "os_private_network_cidr" {
-  description = "Private network CIDR, if empty a random CIDR will be chosen, 10.244.0.0/16 and 10.96.0.0/12 are used by Talos."
+  description = "Optional IPv4 CIDR for managed networking; leave empty in existing mode, if empty a random CIDR will be chosen, 10.244.0.0/16 and 10.96.0.0/12 are used by Talos"
   type        = string
   default     = ""
 }
@@ -138,6 +161,17 @@ variable "kubernetes_version" {
   type        = string
 }
 
+variable "talos_config_version" {
+  description = "Optional Talos configuration-generation contract; null preserves provider defaults, while a version pins the schema and defaults without upgrading the OS"
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.talos_config_version == null ? true : can(regex("^v?[0-9]+\\.[0-9]+(\\.[0-9]+)?$", var.talos_config_version))
+    error_message = "The Talos configuration version must be null or a version such as v1.13 or v1.13.1, optionally without the v prefix."
+  }
+}
+
 variable "k0s_version" {
   description = "k0s version"
   type        = string
@@ -217,4 +251,3 @@ variable "keystone_auth_port" {
   description = "Port of keystone auth"
   type        = number
 }
-

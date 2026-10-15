@@ -13,27 +13,27 @@ To use this module, include the following in your Terraform configuration:
 ```hcl
 module "base" {
   source = "git::git@github.com:valiton-k8s-blueprints/terraform.git/bws-talos/base?ref=main"
-  
+
   base_name = "my_project"
-  
+
   # Additional configuration...
 }
 ```
 
 ## Before you start
-This setup uses [Talos Linux](https://www.talos.dev/) to deploy and run Kubernetes. To manage Talos you have to install talosctl 
+This setup uses [Talos Linux](https://www.talos.dev/) to deploy and run Kubernetes. To manage Talos you have to install talosctl
 on the machine that runs the setup. Get the version for your platform with Homebrew or download it from https://github.com/siderolabs/talos/releases.
 
 You also need a BWS project that is available via UCS. Log into BWS and create application credentials with roles "reader", "member" and "load-balancer_member".
 Secondly create a floating ip address that will be used as the endpoint to access Talos and Kubernetes.
 
 Setup your terraform configuration (see examples) and create Talos secrets with the command
- 
+
 ```shell
 talosctl gen secrets
 ```
 
-Setup the terraform variables for 
+Setup the terraform variables for
 
 ```terraform
 os_application_credential_id     = "<your application credential id>"
@@ -54,14 +54,39 @@ terraform output -raw controlplane_machine_configuration > controlplane.yaml
 terraform output -raw worker_machine_configuration > worker.yaml
 ```
 
+## Private network configuration
+
+By default, Terraform creates a private network, subnet, router, and router
+interface. To use an existing network and subnet instead, set
+`os_existing_private_network` to their exact names, as shown below.
+
+For a new network:
+
+- `os_private_network_name` sets the network name. The module adds the
+  `base_name` prefix.
+- `os_private_network_subnet_name` sets the subnet name. If you leave it empty,
+  the module builds a name from `base_name` and the network name.
+- `os_private_network_cidr` sets the subnet's IPv4 range. If you leave it
+  empty, the module generates one.
+
+To reuse networking, provide the exact names of the existing network and
+subnet:
+
+```hcl
+os_existing_private_network = {
+  network_name = "shared-private-network"
+  subnet_name  = "shared-private-subnet"
+}
+```
+
 ## Requirements
 
 ## Best Practices
 - Use **remote state storage** (e.g., S3 + DynamoDB) to manage state files.
-- Follow the **principle of least privilege** 
+- Follow the **principle of least privilege**
 
 ## Contributing
 Feel free to submit **issues and pull requests** to improve this module.
 
 ## License
-This module is licensed under the **MIT License**. 
+This module is licensed under the **MIT License**.

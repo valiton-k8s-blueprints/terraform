@@ -35,22 +35,22 @@ output "os_private_network_id" {
 }
 
 output "os_private_network_subnet_name" {
-  description = "Name of the created private network subnet"
+  description = "Name of the selected private network subnet"
   value       = module.network.private_network_subnet_name
 }
 
 output "os_private_network_subnet_id" {
-  description = "ID of the created private network subnet"
+  description = "ID of the selected private network subnet"
   value       = module.network.private_network_subnet_id
 }
 
 output "os_private_network_subnet_cidr" {
-  description = "CIDR of the created private network subnet"
-  value       = local.private_network_cidr
+  description = "Actual CIDR of the selected private network subnet"
+  value       = module.network.private_network_subnet_cidr
 }
 
 output "os_private_network_router_name" {
-  description = "Name of the created router on the private network"
+  description = "Name of the managed private router, or null in existing mode"
   value       = module.network.private_network_router_name
 }
 
@@ -62,6 +62,11 @@ output "os_ssh_keypair_name" {
 output "internal_security_group_name" {
   description = "Name of created internal security group"
   value       = module.network.internal_security_group_name
+}
+
+output "internal_security_group_id" {
+  description = "ID of the created internal security group"
+  value       = module.network.internal_security_group_id
 }
 
 output "cluster_health" {

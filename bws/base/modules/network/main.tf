@@ -1,26 +1,86 @@
+resource "random_integer" "ip_part" {
+  count = local.create_private_network && var.os_private_network_cidr == "" ? 1 : 0
+
+  # prevent overlap with 10.96.0.0/12
+  min = 112
+  # prevent overlap with 10.244.0.0/16
+  max = 243
+}
+
+locals {
+  create_private_network      = var.os_existing_private_network == null
+  managed_network_cidr        = var.os_private_network_cidr != "" ? var.os_private_network_cidr : (local.create_private_network ? "10.${random_integer.ip_part[0].result}.0.0/16" : "")
+  private_network_id          = local.create_private_network ? openstack_networking_network_v2.private_network[0].id : data.openstack_networking_network_v2.private_network[0].id
+  private_network_name        = local.create_private_network ? openstack_networking_network_v2.private_network[0].name : data.openstack_networking_network_v2.private_network[0].name
+  private_network_subnet_id   = local.create_private_network ? openstack_networking_subnet_v2.private_network_subnet[0].id : data.openstack_networking_subnet_v2.private_network_subnet[0].id
+  private_network_subnet_name = local.create_private_network ? openstack_networking_subnet_v2.private_network_subnet[0].name : data.openstack_networking_subnet_v2.private_network_subnet[0].name
+  private_network_subnet_cidr = local.create_private_network ? openstack_networking_subnet_v2.private_network_subnet[0].cidr : data.openstack_networking_subnet_v2.private_network_subnet[0].cidr
+}
+
 data "openstack_networking_network_v2" "public_network" {
   name = var.os_public_network_name
+
+  lifecycle {
+    precondition {
+      condition     = local.create_private_network || var.os_private_network_cidr == ""
+      error_message = "Existing networking derives its CIDR from the subnet; leave os_private_network_cidr empty."
+    }
+  }
+}
+
+data "openstack_networking_network_v2" "private_network" {
+  count = local.create_private_network ? 0 : 1
+
+  name = var.os_existing_private_network.network_name
+}
+
+data "openstack_networking_subnet_v2" "private_network_subnet" {
+  count = local.create_private_network ? 0 : 1
+
+  name       = var.os_existing_private_network.subnet_name
+  network_id = data.openstack_networking_network_v2.private_network[0].id
+  ip_version = 4
+
+  lifecycle {
+    postcondition {
+      condition     = self.network_id == data.openstack_networking_network_v2.private_network[0].id
+      error_message = "The selected private subnet must belong to the selected private network."
+    }
+
+    postcondition {
+      condition     = self.ip_version == 4 && can(cidrnetmask(self.cidr))
+      error_message = "The selected private subnet must use IPv4."
+    }
+  }
 }
 
 resource "openstack_networking_network_v2" "private_network" {
+  count = local.create_private_network ? 1 : 0
+
   name = "${var.name_prefix}-${var.os_private_network_name}"
 }
 
 resource "openstack_networking_subnet_v2" "private_network_subnet" {
-  name       = "${var.name_prefix}-${var.os_private_network_name}-subnet"
-  cidr       = var.os_private_network_cidr
+  count = local.create_private_network ? 1 : 0
+
+  name       = var.os_private_network_subnet_name != "" ? var.os_private_network_subnet_name : "${var.name_prefix}-${var.os_private_network_name}-subnet"
+  cidr       = local.managed_network_cidr
   ip_version = 4
-  network_id = openstack_networking_network_v2.private_network.id
+  network_id = openstack_networking_network_v2.private_network[0].id
 }
 
 resource "openstack_networking_router_v2" "private_network_router" {
+  count = local.create_private_network ? 1 : 0
+
   name                = "${var.name_prefix}-router"
   external_network_id = data.openstack_networking_network_v2.public_network.id
 }
 
 resource "openstack_networking_router_interface_v2" "private_network_router_interface" {
-  router_id = openstack_networking_router_v2.private_network_router.id
-  subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
+  count = local.create_private_network ? 1 : 0
+
+  router_id = openstack_networking_router_v2.private_network_router[0].id
+  subnet_id = openstack_networking_subnet_v2.private_network_subnet[0].id
 }
 
 resource "openstack_networking_secgroup_v2" "private_network_allow_internal" {
@@ -45,7 +105,7 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_kube_api_rule_ipv4" {
   port_range_min    = 6443
   port_range_max    = 6443
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_talos_api_rule_ipv4" {
@@ -57,7 +117,7 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_talos_api_rule_ipv4" {
   port_range_min    = 50000
   port_range_max    = 50000
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_k0s_api_rule_ipv4" {
@@ -69,7 +129,7 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_k0s_api_rule_ipv4" {
   port_range_min    = 9443
   port_range_max    = 9443
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_konnectivity_rule_ipv4" {
@@ -81,7 +141,7 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_konnectivity_rule_ipv4
   port_range_min    = 8132
   port_range_max    = 8132
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_ssh_ipv4" {
@@ -93,7 +153,7 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_ssh_ipv4" {
   port_range_min    = 22
   port_range_max    = 22
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_keystone_auth_ipv4" {
@@ -105,55 +165,55 @@ resource "openstack_networking_secgroup_rule_v2" "ingress_keystone_auth_ipv4" {
   port_range_min    = var.keystone_auth_port
   port_range_max    = var.keystone_auth_port
   security_group_id = openstack_networking_secgroup_v2.external.id
-  remote_ip_prefix  = var.os_private_network_cidr
+  remote_ip_prefix  = local.private_network_subnet_cidr
 }
 
 resource "openstack_networking_port_v2" "bastion_port" {
   count = var.enable_ssh_bastion ? 1 : 0
 
   name       = "${var.name_prefix}-bastion"
-  network_id = openstack_networking_network_v2.private_network.id
+  network_id = local.private_network_id
   security_group_ids = [
     openstack_networking_secgroup_v2.external.id,
     openstack_networking_secgroup_v2.private_network_allow_internal.id
   ]
 
   fixed_ip {
-    subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
+    subnet_id = local.private_network_subnet_id
   }
 }
 
 resource "openstack_networking_port_v2" "worker_port" {
   count      = var.worker_count
   name       = "${var.name_prefix}-worker-${count.index}"
-  network_id = openstack_networking_network_v2.private_network.id
+  network_id = local.private_network_id
   security_group_ids = concat(
     var.enable_ssh_bastion ? [openstack_networking_secgroup_v2.external.id] : [],
     [openstack_networking_secgroup_v2.private_network_allow_internal.id]
   )
 
   fixed_ip {
-    subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
+    subnet_id = local.private_network_subnet_id
   }
 }
 
 resource "openstack_networking_port_v2" "controlplane_port" {
   count      = var.controlplane_count
   name       = "${var.name_prefix}-controlplane-${count.index}"
-  network_id = openstack_networking_network_v2.private_network.id
+  network_id = local.private_network_id
   security_group_ids = [
     openstack_networking_secgroup_v2.external.id,
     openstack_networking_secgroup_v2.private_network_allow_internal.id
   ]
 
   fixed_ip {
-    subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
+    subnet_id = local.private_network_subnet_id
   }
 }
 
 resource "openstack_lb_loadbalancer_v2" "loadbalancer" {
   name          = "${var.name_prefix}-loadbalancer"
-  vip_subnet_id = openstack_networking_subnet_v2.private_network_subnet.id
+  vip_subnet_id = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "kube_api" {
@@ -187,7 +247,7 @@ resource "openstack_lb_member_v2" "kube_api" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.kube_api.id
   protocol_port = 6443
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "talos_api" {
@@ -225,7 +285,7 @@ resource "openstack_lb_member_v2" "talos_api" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.talos_api[0].id
   protocol_port = 50000
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "k0s_api" {
@@ -263,7 +323,7 @@ resource "openstack_lb_member_v2" "k0s_api" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.k0s_api[0].id
   protocol_port = 9443
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "konnectivity" {
@@ -303,7 +363,7 @@ resource "openstack_lb_member_v2" "konnectivity" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.konnectivity[0].id
   protocol_port = 8132
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "ssh_bastion" {
@@ -341,7 +401,7 @@ resource "openstack_lb_member_v2" "ssh_bastion" {
   address       = openstack_networking_port_v2.bastion_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.ssh_bastion[count.index].id
   protocol_port = 22
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_listener_v2" "keystone_auth" {
@@ -379,7 +439,7 @@ resource "openstack_lb_member_v2" "keystone_auth_controlplane" {
   address       = openstack_networking_port_v2.controlplane_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.keystone_auth[0].id
   protocol_port = var.keystone_auth_port
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_lb_member_v2" "keystone_auth_worker" {
@@ -389,7 +449,7 @@ resource "openstack_lb_member_v2" "keystone_auth_worker" {
   address       = openstack_networking_port_v2.worker_port[count.index].all_fixed_ips[0]
   pool_id       = openstack_lb_pool_v2.keystone_auth[0].id
   protocol_port = var.keystone_auth_port
-  subnet_id     = openstack_networking_subnet_v2.private_network_subnet.id
+  subnet_id     = local.private_network_subnet_id
 }
 
 resource "openstack_networking_floatingip_associate_v2" "loadbalancer_ip" {
