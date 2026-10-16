@@ -66,12 +66,6 @@ locals {
 resource "local_file" "k0s_yaml" {
   content  = local.k0s_yaml
   filename = "k0s.yaml"
-
-  provisioner "local-exec" {
-    when       = destroy
-    command    = "k0sctl reset --force --config k0s.yaml"
-    on_failure = continue
-  }
 }
 
 resource "null_resource" "bootstrap_k0s" {
